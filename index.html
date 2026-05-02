@@ -125,6 +125,35 @@
             border-color: var(--text-bright);
         }
 
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-bright);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
         .hero {
             min-height: 100vh;
             display: flex;
@@ -918,10 +947,51 @@
         @media (max-width: 768px) {
             nav {
                 padding: 16px 24px;
+                flex-wrap: wrap;
             }
 
             .nav-links {
+                position: fixed;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                padding: 24px;
+                gap: 16px;
+                border-bottom: 1px solid var(--border);
+                transform: translateY(-150%);
+                opacity: 0;
+                transition: all 0.3s ease;
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .nav-links a {
+                font-size: 1.1rem;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .lang-selector {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                margin-top: 16px;
+                margin-left: 0;
                 display: none;
+            }
+
+            .lang-selector.active {
+                display: flex;
             }
 
             .stats-grid {
@@ -981,6 +1051,129 @@
         .card-3d:hover {
             transform: translateZ(40px) rotateX(-5deg);
         }
+
+        /* VPM Section */
+        .vpm-section {
+            padding: 120px 24px;
+            background: var(--bg-2);
+            border-top: 1px solid var(--border);
+        }
+
+        .vpm-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: start;
+        }
+
+        .vpm-desc {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 48px;
+            line-height: 1.7;
+        }
+
+        .vpm-features {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .vpm-feature {
+            display: flex;
+            gap: 20px;
+            padding: 24px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .vpm-feature:hover {
+            background: var(--bg-3);
+            transform: translateX(10px) translateZ(10px);
+            border-color: var(--text);
+        }
+
+        .vpm-feature-icon {
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-bright);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .vpm-feature:hover .vpm-feature-icon {
+            border-color: var(--text-bright);
+            background: var(--text-bright);
+            color: var(--bg);
+        }
+
+        .vpm-feature-text h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 6px;
+        }
+
+        .vpm-feature-text p {
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .vpm-terminal {
+            perspective: 1200px;
+        }
+
+        .vpm-terminal .code-window {
+            transform-style: preserve-3d;
+            transform: rotateX(4deg) rotateY(-2deg);
+            transition: transform 0.4s ease;
+        }
+
+        .vpm-terminal .code-window:hover {
+            transform: rotateX(2deg) rotateY(-1deg) translateZ(20px);
+        }
+
+        .vpm-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 64px;
+        }
+
+        @media (max-width: 968px) {
+            .vpm-content {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .vpm-terminal .code-window {
+                transform: none;
+            }
+
+            .vpm-terminal .code-window:hover {
+                transform: translateZ(10px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .vpm-cta {
+                flex-direction: column;
+            }
+
+            .vpm-cta .btn {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -992,12 +1185,19 @@
             <li><a href="#architecture" data-i18n="nav.architecture">架构</a></li>
             <li><a href="#philosophy" data-i18n="nav.philosophy">理念</a></li>
             <li><a href="#ecosystem" data-i18n="nav.ecosystem">生态</a></li>
+            <li><a href="#vpm" data-i18n="nav.vpm">VPM</a></li>
+            <li><a href="https://github.com/vixlang/Vix-lang" target="_blank" data-i18n="nav.github">GitHub</a></li>
         </ul>
         <div class="lang-selector">
             <button class="lang-btn active" data-lang="zh">中文</button>
             <button class="lang-btn" data-lang="en">EN</button>
             <button class="lang-btn" data-lang="fr">FR</button>
         </div>
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
 
     <section class="hero">
@@ -1437,14 +1637,14 @@
                     <span class="ecosystem-status">自举中</span>
                 </div>
 
-                <div class="ecosystem-item">
+                <a href="#vpm" class="ecosystem-item">
                     <div class="ecosystem-icon">P</div>
                     <div class="ecosystem-info">
                         <h4>VPM</h4>
                         <p>包管理器</p>
                     </div>
                     <span class="ecosystem-status">Beta</span>
-                </div>
+                </a>
 
                 <div class="ecosystem-item">
                     <div class="ecosystem-icon">L</div>
@@ -1476,6 +1676,127 @@
         </div>
     </section>
 
+    <section class="vpm-section" id="vpm">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">包管理</div>
+                <h2 class="section-title">VPM</h2>
+            </div>
+
+            <div class="vpm-content">
+                <div class="vpm-intro">
+                    <p class="vpm-desc">Vix Package Manager - VIx 语言的官方包管理器。简洁、快速、可靠。</p>
+                    <div class="vpm-features">
+                        <div class="vpm-feature">
+                            <div class="vpm-feature-icon">+</div>
+                            <div class="vpm-feature-text">
+                                <h4>依赖管理</h4>
+                                <p>自动解析和安装项目依赖，支持语义化版本控制</p>
+                            </div>
+                        </div>
+                        <div class="vpm-feature">
+                            <div class="vpm-feature-icon">#</div>
+                            <div class="vpm-feature-text">
+                                <h4>项目初始化</h4>
+                                <p>快速创建新项目，提供标准项目模板</p>
+                            </div>
+                        </div>
+                        <div class="vpm-feature">
+                            <div class="vpm-feature-icon">@</div>
+                            <div class="vpm-feature-text">
+                                <h4>包发布</h4>
+                                <p>一键发布到 VPM 仓库，与社区共享代码</p>
+                            </div>
+                        </div>
+                        <div class="vpm-feature">
+                            <div class="vpm-feature-icon">&gt;</div>
+                            <div class="vpm-feature-text">
+                                <h4>构建集成</h4>
+                                <p>与 vixc 编译器深度集成，一键构建项目</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vpm-terminal">
+                    <div class="code-window">
+                        <div class="code-header">
+                            <div class="code-dot"></div>
+                            <div class="code-dot"></div>
+                            <div class="code-dot"></div>
+                            <div class="code-tabs">
+                                <button class="code-tab active" data-tab="vpm-init">init</button>
+                                <button class="code-tab" data-tab="vpm-install">install</button>
+                                <button class="code-tab" data-tab="vpm-build">build</button>
+                                <button class="code-tab" data-tab="vpm-publish">publish</button>
+                            </div>
+                        </div>
+
+                        <div class="code-body active" id="vpm-init">
+                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 初始化新项目</span></span></div>
+                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">vpm</span> init my-project</span></div>
+                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Created new project 'my-project'</span></span></div>
+                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"><span class="string">Project type: binary</span></span></div>
+                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"><span class="comment"># 生成的项目结构</span></span></div>
+                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content">my-project/</span></div>
+                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">  <span class="keyword">├──</span> vix.toml          <span class="comment"># 项目配置</span></span></div>
+                            <div class="code-line"><span class="line-number">10</span><span class="code-content">  <span class="keyword">├──</span> src/</span></div>
+                            <div class="code-line"><span class="line-number">11</span><span class="code-content">  <span class="keyword">│</span>   <span class="keyword">└──</span> main.vix      <span class="comment"># 入口文件</span></span></div>
+                            <div class="code-line"><span class="line-number">12</span><span class="code-content">  <span class="keyword">└──</span> .gitignore</span></div>
+                        </div>
+
+                        <div class="code-body" id="vpm-install">
+                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 安装依赖</span></span></div>
+                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">vpm</span> add net</span></div>
+                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Adding dependency 'net'...</span></span></div>
+                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"><span class="string">Resolved: net@1.2.0</span></span></div>
+                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"><span class="string">Installed 3 packages</span></span></div>
+                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"><span class="comment"># 从 vix.toml</span></span></div>
+                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">[dependencies]</span></div>
+                            <div class="code-line"><span class="line-number">10</span><span class="code-content">net = <span class="string">"1.2.0"</span></span></div>
+                            <div class="code-line"><span class="line-number">11</span><span class="code-content">json = <span class="string">"^2.0.0"</span></span></div>
+                        </div>
+
+                        <div class="code-body" id="vpm-build">
+                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 构建项目</span></span></div>
+                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">vpm</span> build</span></div>
+                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Compiling my-project v0.1.0</span></span></div>
+                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"><span class="string">Downloading dependencies...</span></span></div>
+                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"><span class="string">Building target/release/my-project</span></span></div>
+                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"><span class="string">Build completed in 2.34s</span></span></div>
+                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content"><span class="comment"># 运行项目</span></span></div>
+                            <div class="code-line"><span class="line-number">10</span><span class="code-content"><span class="variable">$</span> <span class="function">vpm</span> run</span></div>
+                            <div class="code-line"><span class="line-number">11</span><span class="code-content"><span class="string">Hello, Vix!</span></span></div>
+                        </div>
+
+                        <div class="code-body" id="vpm-publish">
+                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 发布包</span></span></div>
+                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">vpm</span> login</span></div>
+                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Authenticated as: user@example.com</span></span></div>
+                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"></span></div>
+                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"><span class="variable">$</span> <span class="function">vpm</span> publish</span></div>
+                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"><span class="string">Packaging my-lib v1.0.0</span></span></div>
+                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"><span class="string">Uploading to registry...</span></span></div>
+                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content"><span class="string">Published successfully!</span></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vpm-cta">
+                <a href="https://github.com/vixlang/vpm" target="_blank" class="btn btn-primary">安装 VPM</a>
+                <a href="https://github.com/vixlang/vpm" target="_blank" class="btn btn-secondary">查看文档</a>
+            </div>
+        </div>
+    </section>
+
     <section class="cta">
         <div class="container">
             <h2>开始使用 VIx</h2>
@@ -1496,6 +1817,7 @@
                     <a href="#comparison">对比</a>
                     <a href="#architecture">架构</a>
                     <a href="#ecosystem">生态</a>
+                    <a href="#vpm">VPM</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -1513,6 +1835,8 @@
                 'nav.architecture': '架构',
                 'nav.philosophy': '理念',
                 'nav.ecosystem': '生态',
+                'nav.vpm': 'VPM',
+                'nav.github': 'GitHub',
                 'hero.badge': 'BOOTSTRAP 90%',
                 'hero.title': 'VIx',
                 'hero.subtitle': '静态类型、编译型语言。使用 LLVM 后端。支持泛型、ADT、指针运算。',
@@ -1593,6 +1917,19 @@
                 'phil.realityDesc': '务实设计。解决实际问题，非理论问题。',
                 'section.ecosystem': '生态',
                 'section.ecosystemTitle': '项目组件',
+                'section.vpm': '包管理',
+                'section.vpmTitle': 'VPM',
+                'vpm.desc': 'Vix Package Manager - VIx 语言的官方包管理器。简洁、快速、可靠。',
+                'vpm.feature1.title': '依赖管理',
+                'vpm.feature1.desc': '自动解析和安装项目依赖，支持语义化版本控制',
+                'vpm.feature2.title': '项目初始化',
+                'vpm.feature2.desc': '快速创建新项目，提供标准项目模板',
+                'vpm.feature3.title': '包发布',
+                'vpm.feature3.desc': '一键发布到 VPM 仓库，与社区共享代码',
+                'vpm.feature4.title': '构建集成',
+                'vpm.feature4.desc': '与 vixc 编译器深度集成，一键构建项目',
+                'vpm.btn1': '安装 VPM',
+                'vpm.btn2': '查看文档',
                 'eco.vixc': '编译器',
                 'eco.vixc0': '自举编译器',
                 'eco.vpm': '包管理器',
@@ -1613,6 +1950,8 @@
                 'nav.architecture': 'Architecture',
                 'nav.philosophy': 'Philosophy',
                 'nav.ecosystem': 'Ecosystem',
+                'nav.vpm': 'VPM',
+                'nav.github': 'GitHub',
                 'hero.badge': 'BOOTSTRAP 90%',
                 'hero.title': 'VIx',
                 'hero.subtitle': 'Static typed, compiled language. LLVM backend. Generics, ADT, pointer arithmetic.',
@@ -1693,6 +2032,19 @@
                 'phil.realityDesc': 'Practical design. Solves real problems, not theoretical ones.',
                 'section.ecosystem': 'Ecosystem',
                 'section.ecosystemTitle': 'Project Components',
+                'section.vpm': 'Package Manager',
+                'section.vpmTitle': 'VPM',
+                'vpm.desc': 'Vix Package Manager - The official package manager for VIx. Simple, fast, reliable.',
+                'vpm.feature1.title': 'Dependency Management',
+                'vpm.feature1.desc': 'Automatically resolve and install project dependencies with semantic versioning',
+                'vpm.feature2.title': 'Project Initialization',
+                'vpm.feature2.desc': 'Quickly create new projects with standard templates',
+                'vpm.feature3.title': 'Package Publishing',
+                'vpm.feature3.desc': 'Publish to VPM registry with one command, share code with the community',
+                'vpm.feature4.title': 'Build Integration',
+                'vpm.feature4.desc': 'Deep integration with vixc compiler, build projects with one command',
+                'vpm.btn1': 'Install VPM',
+                'vpm.btn2': 'Documentation',
                 'eco.vixc': 'Compiler',
                 'eco.vixc0': 'Bootstrap Compiler',
                 'eco.vpm': 'Package Manager',
@@ -1713,6 +2065,8 @@
                 'nav.architecture': 'Architecture',
                 'nav.philosophy': 'Philosophie',
                 'nav.ecosystem': 'Écosystème',
+                'nav.vpm': 'VPM',
+                'nav.github': 'GitHub',
                 'hero.badge': 'BOOTSTRAP 90%',
                 'hero.title': 'VIx',
                 'hero.subtitle': 'Langage compilé, typé statiquement. Backend LLVM. Génériques, ADT, arithmétique des pointeurs.',
@@ -1793,6 +2147,19 @@
                 'phil.realityDesc': 'Conception pratique. Résout des problèmes réels, pas théoriques.',
                 'section.ecosystem': 'Écosystème',
                 'section.ecosystemTitle': 'Composants du projet',
+                'section.vpm': 'Gestionnaire de paquets',
+                'section.vpmTitle': 'VPM',
+                'vpm.desc': 'Vix Package Manager - Le gestionnaire de paquets officiel pour VIx. Simple, rapide, fiable.',
+                'vpm.feature1.title': 'Gestion des dépendances',
+                'vpm.feature1.desc': 'Résolution et installation automatiques des dépendances avec versioning sémantique',
+                'vpm.feature2.title': 'Initialisation de projet',
+                'vpm.feature2.desc': 'Créez rapidement de nouveaux projets avec des modèles standard',
+                'vpm.feature3.title': 'Publication de paquets',
+                'vpm.feature3.desc': 'Publiez sur le registre VPM en une commande, partagez du code avec la communauté',
+                'vpm.feature4.title': 'Intégration de build',
+                'vpm.feature4.desc': 'Intégration profonde avec le compilateur vixc, construisez des projets en une commande',
+                'vpm.btn1': 'Installer VPM',
+                'vpm.btn2': 'Documentation',
                 'eco.vixc': 'Compilateur',
                 'eco.vixc0': 'Compilateur bootstrap',
                 'eco.vpm': 'Gestionnaire de paquets',
@@ -1848,12 +2215,12 @@
 
             // Update section headers
             document.querySelectorAll('.section-tag').forEach((el, i) => {
-                const keys = ['section.features', 'section.comparison', 'section.architecture', 'section.status', 'section.philosophy', 'section.ecosystem'];
+                const keys = ['section.features', 'section.comparison', 'section.architecture', 'section.status', 'section.philosophy', 'section.ecosystem', 'section.vpm'];
                 if (t[keys[i]]) el.textContent = t[keys[i]];
             });
 
             document.querySelectorAll('.section-title').forEach((el, i) => {
-                const keys = ['section.featuresTitle', 'section.comparisonTitle', 'section.architectureTitle', 'section.statusTitle', 'section.philosophyTitle', 'section.ecosystemTitle'];
+                const keys = ['section.featuresTitle', 'section.comparisonTitle', 'section.architectureTitle', 'section.statusTitle', 'section.philosophyTitle', 'section.ecosystemTitle', 'section.vpmTitle'];
                 if (t[keys[i]]) el.textContent = t[keys[i]];
             });
 
@@ -1940,6 +2307,23 @@
                 if (t[keys[i]]) el.textContent = t[keys[i]];
             });
 
+            // Update vpm section
+            const vpmDesc = document.querySelector('.vpm-desc');
+            if (vpmDesc && t['vpm.desc']) vpmDesc.textContent = t['vpm.desc'];
+
+            document.querySelectorAll('.vpm-feature-text h4').forEach((el, i) => {
+                const keys = ['vpm.feature1.title', 'vpm.feature2.title', 'vpm.feature3.title', 'vpm.feature4.title'];
+                if (t[keys[i]]) el.textContent = t[keys[i]];
+            });
+            document.querySelectorAll('.vpm-feature-text p').forEach((el, i) => {
+                const keys = ['vpm.feature1.desc', 'vpm.feature2.desc', 'vpm.feature3.desc', 'vpm.feature4.desc'];
+                if (t[keys[i]]) el.textContent = t[keys[i]];
+            });
+
+            const vpmBtns = document.querySelectorAll('.vpm-cta .btn');
+            if (vpmBtns[0] && t['vpm.btn1']) vpmBtns[0].textContent = t['vpm.btn1'];
+            if (vpmBtns[1] && t['vpm.btn2']) vpmBtns[1].textContent = t['vpm.btn2'];
+
             // Update CTA
             const ctaH2 = document.querySelector('.cta h2');
             if (ctaH2 && t['section.cta']) ctaH2.textContent = t['section.cta'];
@@ -1979,17 +2363,40 @@
             setLanguage(savedLang);
         }
 
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        const langSelector = document.querySelector('.lang-selector');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            langSelector.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenuBtn.classList.remove('active');
+                navLinks.classList.remove('active');
+                langSelector.classList.remove('active');
+            });
+        });
+
         // Tab switching
         document.querySelectorAll('.code-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 const tabId = this.getAttribute('data-tab');
+                const parentWindow = this.closest('.code-window');
                 
-                document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.code-body').forEach(b => b.classList.remove('active'));
-                
-                this.classList.add('active');
-                const targetBody = document.getElementById(tabId);
-                if (targetBody) targetBody.classList.add('active');
+                if (parentWindow) {
+                    parentWindow.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+                    parentWindow.querySelectorAll('.code-body').forEach(b => b.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const targetBody = parentWindow.querySelector('#' + tabId);
+                    if (targetBody) targetBody.classList.add('active');
+                }
             });
         });
 
