@@ -1,2445 +1,267 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIx-Lang</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>VIx Lang</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="一门静态类型、编译型语言。使用 LLVM 后端，支持泛型、ADT、指针运算。">
+    
     <style>
         :root {
-            --bg: #0a0a0a;
-            --bg-2: #111;
-            --bg-3: #1a1a1a;
-            --border: #333;
-            --text: #e0e0e0;
-            --text-bright: #fafafa;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
-            perspective: 1000px;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            padding: 20px 48px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 10, 10, 0.95);
-            border-bottom: 1px solid var(--border);
-            transform-style: preserve-3d;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-bright);
-            letter-spacing: -1px;
-        }
-
-        .logo span {
-            font-weight: 300;
-            color: var(--text);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 48px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: var(--text-bright);
-        }
-
-        .lang-selector {
-            display: flex;
-            gap: 4px;
-            margin-left: 32px;
-        }
-
-        .lang-btn {
-            padding: 6px 12px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .lang-btn:hover {
-            border-color: var(--text);
-            color: var(--text-bright);
-        }
-
-        .lang-btn.active {
-            background: var(--text-bright);
-            color: var(--bg);
-            border-color: var(--text-bright);
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            flex-direction: column;
-            gap: 6px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-        }
-
-        .mobile-menu-btn span {
-            width: 24px;
-            height: 2px;
-            background: var(--text-bright);
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu-btn.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .mobile-menu-btn.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .mobile-menu-btn.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 120px 24px 80px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(255,255,255,0.02) 0%, transparent 50%);
-        }
-
-        .hero-grid {
-            position: absolute;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 80px 80px;
-            transform: perspective(800px) rotateX(60deg) translateY(-100px);
-            transform-origin: center top;
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: perspective(800px) rotateX(60deg) translateY(0); }
-            100% { transform: perspective(800px) rotateX(60deg) translateY(80px); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            max-width: 900px;
-            transform-style: preserve-3d;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border: 1px solid var(--border);
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text);
-            margin-bottom: 32px;
-            animation: fadeSlide 0.8s ease forwards;
-        }
-
-        @keyframes fadeSlide {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero h1 {
-            font-size: clamp(3rem, 10vw, 6rem);
-            font-weight: 800;
-            color: var(--text-bright);
-            line-height: 1;
-            letter-spacing: -4px;
-            margin-bottom: 24px;
-            animation: fadeSlide 0.8s ease 0.1s forwards;
-            opacity: 0;
-        }
-
-        .hero h1 .dim {
-            color: var(--text);
-            font-weight: 300;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: var(--text);
-            max-width: 600px;
-            margin-bottom: 48px;
-            animation: fadeSlide 0.8s ease 0.2s forwards;
-            opacity: 0;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            animation: fadeSlide 0.8s ease 0.3s forwards;
-            opacity: 0;
-        }
-
-        .btn {
-            padding: 14px 32px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-            transform-style: preserve-3d;
-        }
-
-        .btn-primary {
-            background: var(--text-bright);
-            color: var(--bg);
-            border: 1px solid var(--text-bright);
-        }
-
-        .btn-primary:hover {
-            background: var(--text);
-            border-color: var(--text);
-            transform: translateZ(10px);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-bright);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--text);
-            color: var(--text-bright);
-            transform: translateZ(10px);
-        }
-
-        /* Code Window */
-        .code-preview {
-            margin-top: 80px;
-            animation: fadeSlide 0.8s ease 0.4s forwards;
-            opacity: 0;
-            perspective: 1200px;
-        }
-
-        .code-window {
-            background: var(--bg-2);
-            border: 1px solid var(--border);
-            transform-style: preserve-3d;
-            transform: rotateX(8deg) rotateY(-2deg);
-            transition: transform 0.4s ease;
-        }
-
-        .code-window:hover {
-            transform: rotateX(4deg) rotateY(-1deg) translateZ(20px);
-        }
-
-        .code-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-3);
-        }
-
-        .code-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--border);
-        }
-
-        .code-tabs {
-            display: flex;
-            gap: 4px;
-            margin-left: 24px;
-            padding: 0;
-            background: transparent;
-            border-bottom: none;
-        }
-
-        .code-tab {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-family: 'JetBrains Mono', monospace;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .code-tab:hover {
-            color: var(--text-bright);
-        }
-
-        .code-tab.active {
-            color: var(--text-bright);
-        }
-
-        .code-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--text-bright);
-        }
-
-        .code-body {
-            padding: 32px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            line-height: 1.8;
-            display: none;
-            text-align: left;
-        }
-
-        .code-body.active {
-            display: block;
-        }
-
-        .code-line {
-            display: flex;
-        }
-
-        .line-number {
-            color: var(--border);
-            min-width: 40px;
-            user-select: none;
-            text-align: right;
-            padding-right: 24px;
-        }
-
-        .code-content {
-            flex: 1;
-        }
-
-        .keyword { color: #a0a0a0; }
-        .function { color: #d0d0d0; }
-        .string { color: #909090; }
-        .number { color: #b0b0b0; }
-        .type { color: #c0c0c0; }
-        .comment { color: #555; }
-        .operator { color: #888; }
-        .variable { color: #a0a0a0; }
-
-        /* Stats */
-        .stats {
-            padding: 120px 24px;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-        }
-
-        .stat-item {
-            padding: 48px 32px;
-            background: var(--bg);
-            text-align: center;
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
-        }
-
-        .stat-item:hover {
-            background: var(--bg-2);
-            transform: translateZ(20px);
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--text-bright);
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: -2px;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Features */
-        .features {
-            padding: 120px 24px;
-        }
-
-        .section-header {
-            margin-bottom: 80px;
-        }
-
-        .section-tag {
-            font-size: 0.75rem;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 800;
-            color: var(--text-bright);
-            letter-spacing: -2px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-        }
-
-        .feature-card {
-            padding: 48px 32px;
-            background: var(--bg);
-            transition: all 0.4s ease;
-            transform-style: preserve-3d;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--bg-2);
-            transform: translateZ(-1px);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px) translateZ(20px);
-        }
-
-        .feature-icon {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-bright);
-            margin-bottom: 24px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .feature-card h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-bright);
-            margin-bottom: 12px;
-        }
-
-        .feature-card p {
-            font-size: 0.9rem;
-            color: var(--text);
-            line-height: 1.7;
-        }
-
-        /* Comparison */
-        .comparison {
-            padding: 120px 24px;
-            background: var(--bg-2);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid var(--border);
-        }
-
-        .comparison-table th,
-        .comparison-table td {
-            padding: 20px 24px;
-            text-align: left;
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-
-        .comparison-table th {
-            background: var(--bg-3);
-            font-weight: 600;
-            color: var(--text-bright);
-        }
-
-        .comparison-table td {
-            background: var(--bg-2);
-        }
-
-        .comparison-table tr:hover td {
-            background: var(--bg-3);
-        }
-
-        .check { color: var(--text-bright); }
-        .cross { color: #555; }
-        .partial { color: var(--text); }
-
-        /* Architecture */
-        .architecture {
-            padding: 120px 24px;
-        }
-
-        .arch-diagram {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 48px;
-            background: var(--bg-2);
-            border: 1px solid var(--border);
-            transform-style: preserve-3d;
-        }
-
-        .arch-flow {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            align-items: center;
-        }
-
-        .arch-node {
-            padding: 24px 48px;
-            font-weight: 600;
-            font-size: 1rem;
-            text-align: center;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .arch-node:hover {
-            transform: translateZ(30px);
-            background: var(--bg-3);
-        }
-
-        .arch-node.source {
-            border-color: var(--text);
-        }
-
-        .arch-node.compiler {
-            border-color: var(--text);
-        }
-
-        .arch-node.backend {
-            border-color: var(--text);
-        }
-
-        .arch-node.output {
-            border-color: var(--text-bright);
-            color: var(--text-bright);
-        }
-
-        .arch-arrow {
-            font-size: 1.5rem;
-            color: var(--border);
-            padding: 16px 0;
-            animation: arrowPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes arrowPulse {
-            0%, 100% { opacity: 0.3; transform: translateY(0); }
-            50% { opacity: 1; transform: translateY(4px); }
-        }
-
-        .arch-nodes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 16px;
-        }
-
-        .arch-subnode {
-            padding: 8px 16px;
-            background: var(--bg-2);
-            border: 1px solid var(--border);
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text);
-        }
-
-        /* Philosophy */
-        .philosophy {
-            padding: 120px 24px;
-            background: var(--bg-2);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .philosophy-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-        }
-
-        .philosophy-card {
-            padding: 48px 32px;
-            background: var(--bg-2);
-            text-align: center;
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
-        }
-
-        .philosophy-card:hover {
-            background: var(--bg-3);
-            transform: translateZ(20px);
-        }
-
-        .philosophy-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 24px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text-bright);
-            transition: all 0.3s ease;
-        }
-
-        .philosophy-card:hover .philosophy-icon {
-            border-color: var(--text-bright);
-            transform: translateZ(20px) rotateX(-10deg);
-        }
-
-        .philosophy-card h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-bright);
-            margin-bottom: 12px;
-        }
-
-        .philosophy-card p {
-            font-size: 0.85rem;
-            color: var(--text);
-            line-height: 1.7;
-        }
-
-        /* Ecosystem */
-        .ecosystem {
-            padding: 120px 24px;
-        }
-
-        .ecosystem-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-        }
-
-        .ecosystem-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 24px;
-            background: var(--bg);
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
-        }
-
-        .ecosystem-item:hover {
-            background: var(--bg-2);
-            transform: translateX(10px) translateZ(10px);
-        }
-
-        .ecosystem-icon {
-            width: 48px;
-            height: 48px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text);
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .ecosystem-item:hover .ecosystem-icon {
-            border-color: var(--text);
-            color: var(--text-bright);
-        }
-
-        .ecosystem-info h4 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-bright);
-            margin-bottom: 4px;
-        }
-
-        .ecosystem-info p {
-            font-size: 0.8rem;
-            color: var(--text);
-        }
-
-        .ecosystem-status {
-            margin-left: auto;
-            padding: 4px 12px;
-            font-size: 0.7rem;
-            font-family: 'JetBrains Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        /* CTA */
-        .cta {
-            padding: 160px 24px;
-            text-align: center;
-            position: relative;
-            border-top: 1px solid var(--border);
-        }
-
-        .cta h2 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 800;
-            color: var(--text-bright);
-            letter-spacing: -2px;
-            margin-bottom: 24px;
-        }
-
-        .cta p {
-            color: var(--text);
-            font-size: 1rem;
-            max-width: 500px;
-            margin: 0 auto 48px;
-        }
-
-        /* Footer */
-        footer {
-            padding: 48px;
-            background: var(--bg-2);
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .footer-logo {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-bright);
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 48px;
-        }
-
-        .footer-links a {
-            color: var(--text);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--text-bright);
-        }
-
-        .footer-bottom {
-            margin-top: 32px;
-            padding-top: 32px;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--text);
-            font-size: 0.8rem;
-        }
-
-        /* Progress Section */
-        .progress-section {
-            padding: 120px 24px;
-            background: var(--bg-2);
-            border-top: 1px solid var(--border);
-        }
-
-        .progress-card {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 48px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-
-        .progress-header h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-bright);
-        }
-
-        .progress-badge {
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        .progress-bar {
-            height: 24px;
-            background: var(--bg-2);
-            border: 1px solid var(--border);
-            margin-bottom: 32px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--text-bright);
-            width: 0;
-            transition: width 1.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--bg);
-        }
-
-        .progress-items {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-        }
-
-        .progress-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            background: var(--bg);
-        }
-
-        .progress-check {
-            width: 24px;
-            height: 24px;
-            border: 1px solid var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: var(--text);
-        }
-
-        .progress-pending {
-            width: 24px;
-            height: 24px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: var(--border);
-        }
-
-        /* Mobile */
-        @media (max-width: 768px) {
-            nav {
-                padding: 16px 24px;
-                flex-wrap: wrap;
-            }
-
-            .nav-links {
-                position: fixed;
-                top: 64px;
-                left: 0;
-                right: 0;
-                background: rgba(10, 10, 10, 0.98);
-                flex-direction: column;
-                padding: 24px;
-                gap: 16px;
-                border-bottom: 1px solid var(--border);
-                transform: translateY(-150%);
-                opacity: 0;
-                transition: all 0.3s ease;
-                z-index: 999;
-            }
-
-            .nav-links.active {
-                transform: translateY(0);
-                opacity: 1;
-            }
-
-            .nav-links a {
-                font-size: 1.1rem;
-                padding: 12px 0;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .mobile-menu-btn {
-                display: flex;
-            }
-
-            .lang-selector {
-                order: 3;
-                width: 100%;
-                justify-content: center;
-                margin-top: 16px;
-                margin-left: 0;
-                display: none;
-            }
-
-            .lang-selector.active {
-                display: flex;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .philosophy-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .ecosystem-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 24px;
-                text-align: center;
-            }
-
-            .footer-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                text-align: center;
-            }
-        }
-
-        /* Animations for scroll */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.6s ease;
-        }
-
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 3D card effect */
-        .card-3d {
-            transform-style: preserve-3d;
-            transition: transform 0.4s ease;
-        }
-
-        .card-3d:hover {
-            transform: translateZ(40px) rotateX(-5deg);
-        }
-
-        /* Very Section */
-        .very-section {
-            padding: 120px 24px;
-            background: var(--bg-2);
-            border-top: 1px solid var(--border);
-        }
-
-        .very-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 64px;
-            align-items: start;
-        }
-
-        .very-desc {
-            font-size: 1.1rem;
-            color: var(--text);
-            margin-bottom: 48px;
-            line-height: 1.7;
-        }
-
-        .very-features {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .very-feature {
-            display: flex;
-            gap: 20px;
-            padding: 24px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
-        }
-
-        .very-feature:hover {
-            background: var(--bg-3);
-            transform: translateX(10px) translateZ(10px);
-            border-color: var(--text);
-        }
-
-        .very-feature-icon {
-            width: 48px;
-            height: 48px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text-bright);
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .very-feature:hover .very-feature-icon {
-            border-color: var(--text-bright);
-            background: var(--text-bright);
-            color: var(--bg);
-        }
-
-        .very-feature-text h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-bright);
-            margin-bottom: 6px;
-        }
-
-        .very-feature-text p {
-            font-size: 0.85rem;
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        .very-terminal {
-            perspective: 1200px;
-        }
-
-        .very-terminal .code-window {
-            transform-style: preserve-3d;
-            transform: rotateX(4deg) rotateY(-2deg);
-            transition: transform 0.4s ease;
-        }
-
-        .very-terminal .code-window:hover {
-            transform: rotateX(2deg) rotateY(-1deg) translateZ(20px);
-        }
-
-        .very-cta {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-top: 64px;
-        }
-
-        @media (max-width: 968px) {
-            .very-content {
-                grid-template-columns: 1fr;
-                gap: 48px;
-            }
-
-            .very-terminal .code-window {
-                transform: none;
-            }
-
-            .very-terminal .code-window:hover {
-                transform: translateZ(10px);
-            }
-        }
+            /* 蓝色调的活力灰与中等明度橙色主题 */
+            --bg: #353b45;
+            --bg-alt: #3e4652;
+            --text-main: #f5f5f5;
+            --text-muted: #cccccc;
+            --border: #5c6678;
+            --orange: #e67e22;
+            --orange-hover: #d35400;
+            --gray-dark: #282c33;
+            --link: #e67e22;
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text-main); 
+            background: var(--bg); 
+            line-height: 1.6; 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        
+        nav { display: flex; justify-content: flex-end; align-items: center; padding: 20px 0; position: relative; min-height: 70px; }
+        .brand { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 2rem; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px;}
+        .brand img { height: 72px; }
+        
+        .nav-right { display: flex; align-items: center; gap: 24px; }
+        
+        .nav-links { display: flex; gap: 24px; list-style: none; margin: 0; padding: 0; }
+        .nav-links a { color: var(--text-main); font-weight: 500; }
+        .nav-links a:hover { color: var(--orange); text-decoration: none; }
+
+        .lang-switch { display: flex; gap: 10px; background: var(--gray-dark); padding: 6px 12px; border-radius: 4px; font-size: 0.85em; font-weight: bold;}
+        .lang-switch a { cursor: pointer; color: var(--text-muted); }
+        .lang-switch a:hover, .lang-switch a.active { color: var(--orange); text-decoration: none;}
+
+        .hero { padding: 80px 0 100px 0; display: flex; align-items: center; justify-content: space-between; gap: 40px; text-align: left; }
+        .hero-code { flex: 1; min-width: 0; }
+        .hero-text { flex: 1; min-width: 0; }
+        
+        .hero h1 { font-size: 4.5rem; margin: 0 0 20px 0; letter-spacing: -0.05em; font-weight: 900; color: var(--orange); }
+        .hero p { font-size: 1.5rem; color: var(--text-muted); margin: 0 0 40px 0; line-height: 1.4;}
+        .hero-actions { display: flex; gap: 20px; }
+        
+        .btn { display: inline-block; padding: 12px 24px; font-size: 1.1rem; font-weight: bold; border-radius: 6px; text-decoration: none !important; transition: all 0.2s; }
+        .btn-primary { background: var(--orange); color: #fff; border: 2px solid var(--orange); }
+        .btn-primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); }
+        .btn-secondary { background: transparent; color: var(--text-main); border: 2px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+        
+        .section { padding: 80px 0; border-top: 1px solid var(--border); }
+        .section-bg { background: var(--bg-alt); }
+        .section-orange { background: var(--orange); color: #fff; border-top: none; }
+        .section-orange h2 { color: #fff; }
+        .section-orange p { color: #ffd6c2; }
+        .section-orange .btn-secondary { border-color: rgba(255,255,255,0.4); color: #fff;}
+        .section-orange .btn-secondary:hover { background: #fff; color: var(--orange); }
+
+        .section h2 { font-size: 2.5rem; margin-top: 0; margin-bottom: 40px; text-align: center; letter-spacing: -0.02em; color: var(--text-main); }
+        
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .feature h3 { font-size: 1.5rem; margin-top: 0; margin-bottom: 12px; color: var(--orange); }
+        .feature p { margin: 0; color: var(--text-muted); }
+
+        .code-sample { background: var(--gray-dark); border: 1px solid var(--border); border-radius: 6px; padding: 20px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95rem; line-height: 1.5; text-align: left; }
+        .code-sample pre { margin: 0; color: #e6edf3;}
+        .code-keyword { color: #ff7b72; }
+        .code-title { color: #d2a8ff; }
+        .code-string { color: #a5d6ff; }
+        .code-comment { color: #8b949e; }
+        
+        footer { padding: 40px 0; background: var(--gray-dark); text-align: center; color: var(--text-muted); }
+        footer p { margin: 10px 0;}
+        footer a { color: var(--text-muted); text-decoration: underline; margin: 0 10px; }
 
         @media (max-width: 768px) {
-            .very-cta {
-                flex-direction: column;
-            }
-
-            .very-cta .btn {
-                text-align: center;
-            }
+            .hero { flex-direction: column-reverse; text-align: center; }
+            .hero h1 { font-size: 3.5rem; }
+            .hero p { font-size: 1.25rem; }
+            .hero-actions { flex-direction: column; width: 100%; }
+            .hero-actions .btn { width: 100%; box-sizing: border-box; }
+            .nav-right { flex-direction: column; gap: 10px; align-items: flex-end; }
+            .nav-links { gap: 15px; }
+            .hero-code { width: 100%; text-align: left; }
         }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="logo">VIx<span>-Lang</span></div>
-        <ul class="nav-links">
-            <li><a href="#features" data-i18n="nav.features">特性</a></li>
-            <li><a href="#comparison" data-i18n="nav.comparison">对比</a></li>
-            <li><a href="#architecture" data-i18n="nav.architecture">架构</a></li>
-            <li><a href="#philosophy" data-i18n="nav.philosophy">理念</a></li>
-            <li><a href="#ecosystem" data-i18n="nav.ecosystem">生态</a></li>
-            <li><a href="#very" data-i18n="nav.very">Very</a></li>
-            <li><a href="https://github.com/vixlang/Vix-lang" target="_blank" data-i18n="nav.github">GitHub</a></li>
-        </ul>
-        <div class="lang-selector">
-            <button class="lang-btn active" data-lang="zh">中文</button>
-            <button class="lang-btn" data-lang="en">EN</button>
-            <button class="lang-btn" data-lang="fr">FR</button>
-        </div>
-        <button class="mobile-menu-btn" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-    </nav>
+    <div class="container">
+        <nav>
+            <a href="#" class="brand">
+                <img src="logo.png" alt="VIx Lang">
+                VIx
+            </a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/VixDocs/" data-i18n="nav_doc">文档</a></li>
+                    <li><a href="https://github.com/vixlang/VixDocs" data-i18n="nav_learn">LearnVix</a></li>
+                    <li><a href="https://github.com/vixlang/ver">Very</a></li>
+                    <li><a href="https://github.com/vixlang/Vix-lang">GitHub</a></li>
+                </ul>
+                <div class="lang-switch">
+                    <a id="btn-zh" onclick="setLang('zh')" class="active">中文</a>
+                    <a id="btn-en" onclick="setLang('en')">EN</a>
+                </div>
+            </div>
+        </nav>
+    </div>
 
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-grid"></div>
-        
+    <div class="container">
+        <header class="hero">
+            <div class="hero-code">
+                <div class="code-sample">
+<pre><code><span class="code-keyword">type</span> <span class="code-title">List</span> = <span class="code-keyword">struct</span> 
+{
+    head: i32,
+    tail: &amp;<span class="code-title">List</span>
+}
+
+<span class="code-keyword">fn</span> <span class="code-title">main</span>(): i32 
+{
+    <span class="code-keyword">let</span> l = <span class="code-title">List</span>{ head: 1, tail: &amp;<span class="code-title">List</span>{ head: 2, tail: &amp;<span class="code-title">List</span>{ head: 3, tail: <span class="code-keyword">nil</span> } } }
+    print(l.head)
+    print(l.tail.head)
+    print(l.tail.tail.head)
+    <span class="code-keyword">return</span> 0
+}</code></pre>
+                </div>
+            </div>
+            <div class="hero-text">
+                <h1 data-i18n="title">VIx Lang</h1>
+                <p data-i18n="desc">一门赋予每个人构建底层、可靠且高效软件能力的语言。</p>
+                <div class="hero-actions">
+                    <a href="/VixDocs/zh_CN/getting-started.html" class="btn btn-primary" data-i18n="start">马上开始</a>
+                    <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary" data-i18n="src">查看源码</a>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <section class="section section-bg">
         <div class="container">
-            <div class="hero-content">
-            <div class="hero-badge">BOOTSTRAP 90%</div>
-            <h1>
-                VIx<br>
-                <span class="dim">Lang</span>
-            </h1>
-            <p class="hero-subtitle">
-                静态类型、编译型语言。使用 LLVM 后端。支持泛型、ADT、指针运算。
+            <h2 data-i18n="why_title">为什么选择 VIx?</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3 data-i18n="f1_t">高性能</h3>
+                    <p data-i18n="f1_d">由于基于 LLVM 后端，VIx 速度惊人且内存利用率极高。它可以胜任对性能要求极高的服务，甚至可以直接在嵌入式设备上运行。</p>
+                </div>
+                <div class="feature">
+                    <h3 data-i18n="f2_t">现代类型系统</h3>
+                    <p data-i18n="f2_d">丰富的类型系统支持泛型与代数数据类型（ADT）。内置现代语言级别的 match 模式匹配体系以及结构体等，使得代码极具表现力。</p>
+                </div>
+                <div class="feature">
+                    <h3 data-i18n="f3_t">底层控制力</h3>
+                    <p data-i18n="f3_d">无缝支持指针运算和原生内存操作。使用 &amp; 取地址，@ 解引用，在提供高级语法抽象的同时，毫不妥协对硬件的绝对掌控。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 data-i18n="build_title">用 Vix 构建应用</h2>
+            <p style="font-size: 1.1rem; max-width: 800px; margin: 0 auto 30px; text-align: center; color: var(--text-muted);" data-i18n="build_desc">
+                Vix 目前正在快速发展中，语法简洁、一致。
             </p>
-            <div class="hero-buttons">
-                <a href="#" class="btn btn-primary">开始使用</a>
-                <a href="#" class="btn btn-secondary">文档</a>
-            </div>
-
-                <div class="code-preview">
-                    <div class="code-window">
-                        <div class="code-header">
-                            <div class="code-dot"></div>
-                            <div class="code-dot"></div>
-                            <div class="code-dot"></div>
-                            <div class="code-tabs">
-                                <button class="code-tab active" data-tab="fib">fn.vix</button>
-                                <button class="code-tab" data-tab="struct">struct.vix</button>
-                                <button class="code-tab" data-tab="generic">generic.vix</button>
-                                <button class="code-tab" data-tab="pointer">ptr.vix</button>
-                                <button class="code-tab" data-tab="adt">adt.vix</button>
-                            </div>
-                        </div>
-                        
-                        <div class="code-body active" id="fib">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment">// fibonacci</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="keyword">fn</span> <span class="function">fib</span>(n: <span class="type">i32</span>) -> <span class="type">i32</span> {</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content">    <span class="keyword">if</span> (n <= <span class="number">1</span>) {</span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content">        <span class="keyword">return</span> n</span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content">    }</span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content">    <span class="keyword">return</span> <span class="function">fib</span>(n - <span class="number">1</span>) <span class="operator">+</span> <span class="function">fib</span>(n - <span class="number">2</span>)</span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content"><span class="keyword">fn</span> <span class="function">main</span>() -> <span class="type">i32</span> {</span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content">    <span class="keyword">mut</span> sum = <span class="number">0</span></span></div>
-                            <div class="code-line"><span class="line-number">12</span><span class="code-content">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">0</span> .. <span class="number">10</span>) {</span></div>
-                            <div class="code-line"><span class="line-number">13</span><span class="code-content">        sum = sum <span class="operator">+</span> <span class="function">fib</span>(i)</span></div>
-                            <div class="code-line"><span class="line-number">14</span><span class="code-content">    }</span></div>
-                            <div class="code-line"><span class="line-number">15</span><span class="code-content">    <span class="function">print</span>(<span class="string">"sum ="</span>, sum)</span></div>
-                            <div class="code-line"><span class="line-number">16</span><span class="code-content">    <span class="keyword">return</span> <span class="number">0</span></span></div>
-                            <div class="code-line"><span class="line-number">17</span><span class="code-content">}</span></div>
-                        </div>
-                        
-                        <div class="code-body" id="struct">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment">// struct</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="keyword">struct</span> <span class="type">Point</span> {</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content">    x: <span class="type">f64</span>,</span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content">    y: <span class="type">f64</span></span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"><span class="keyword">struct</span> <span class="type">Person</span> {</span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">    name: <span class="type">string</span>,</span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content">    age: <span class="type">i32</span>,</span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content">    pos: <span class="type">Point</span></span></div>
-                            <div class="code-line"><span class="line-number">12</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number">13</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number">14</span><span class="code-content"><span class="keyword">fn</span> <span class="function">main</span>() -> <span class="type">i32</span> {</span></div>
-                            <div class="code-line"><span class="line-number">15</span><span class="code-content">    <span class="keyword">let</span> p = <span class="type">Point</span>{ x: <span class="number">1.0</span>, y: <span class="number">2.0</span> }</span></div>
-                            <div class="code-line"><span class="line-number">16</span><span class="code-content">    <span class="keyword">let</span> person = <span class="type">Person</span>{</span></div>
-                            <div class="code-line"><span class="line-number">17</span><span class="code-content">        name: <span class="string">"alice"</span>,</span></div>
-                            <div class="code-line"><span class="line-number">18</span><span class="code-content">        age: <span class="number">30</span>,</span></div>
-                            <div class="code-line"><span class="line-number">19</span><span class="code-content">        pos: p</span></div>
-                            <div class="code-line"><span class="line-number">20</span><span class="code-content">    }</span></div>
-                            <div class="code-line"><span class="line-number">21</span><span class="code-content">    <span class="function">print</span>(person.name, person.pos.x)</span></div>
-                            <div class="code-line"><span class="line-number">22</span><span class="code-content">    <span class="keyword">return</span> <span class="number">0</span></span></div>
-                            <div class="code-line"><span class="line-number">23</span><span class="code-content">}</span></div>
-                        </div>
-                        
-                        <div class="code-body" id="generic">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment">// generic</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="keyword">struct</span> <span class="type">Box</span>:[T] {</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content">    value: T</span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"><span class="keyword">fn</span> <span class="function">identity</span>:[T](v: T) -> T {</span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content">    <span class="keyword">return</span> v</span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content"><span class="keyword">fn</span> <span class="function">map</span>:[T, U](list: [T], f: <span class="type">fn</span>(T) -> U) -> [U] {</span></div>
-                            <div class="code-line"><span class="line-number">12</span><span class="code-content">    <span class="keyword">let</span> result = []</span></div>
-                            <div class="code-line"><span class="line-number">13</span><span class="code-content">    <span class="keyword">for</span> (item <span class="keyword">in</span> list) {</span></div>
-                            <div class="code-line"><span class="line-number">14</span><span class="code-content">        result.push(f(item))</span></div>
-                            <div class="code-line"><span class="line-number">15</span><span class="code-content">    }</span></div>
-                            <div class="code-line"><span class="line-number">16</span><span class="code-content">    <span class="keyword">return</span> result</span></div>
-                            <div class="code-line"><span class="line-number">17</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number">18</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number">19</span><span class="code-content"><span class="keyword">fn</span> <span class="function">main</span>() -> <span class="type">i32</span> {</span></div>
-                            <div class="code-line"><span class="line-number">20</span><span class="code-content">    <span class="keyword">let</span> b = <span class="type">Box</span>:[<span class="type">i32</span>]{ value: <span class="number">42</span> }</span></div>
-                            <div class="code-line"><span class="line-number">21</span><span class="code-content">    <span class="keyword">let</span> nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span></div>
-                            <div class="code-line"><span class="line-number">22</span><span class="code-content">    <span class="keyword">let</span> doubled = <span class="function">map</span>:[<span class="type">i32</span>, <span class="type">i32</span>](nums, <span class="keyword">fn</span>(x) { <span class="keyword">return</span> x * <span class="number">2</span> })</span></div>
-                            <div class="code-line"><span class="line-number">23</span><span class="code-content">    <span class="keyword">return</span> <span class="number">0</span></span></div>
-                            <div class="code-line"><span class="line-number">24</span><span class="code-content">}</span></div>
-                        </div>
-                        
-                        <div class="code-body" id="pointer">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment">// pointer</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="keyword">extern</span> <span class="string">"C"</span> {</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content">    <span class="keyword">fn</span> malloc(size: <span class="type">i32</span>) -> <span class="type">ptr</span></span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content">    <span class="keyword">fn</span> free(p: <span class="type">ptr</span>) -> <span class="type">void</span></span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"><span class="keyword">fn</span> <span class="function">swap</span>(a: <span class="type">&i32</span>, b: <span class="type">&i32</span>) {</span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">    <span class="keyword">let</span> tmp = @a</span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content">    @a = @b</span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content">    @b = tmp</span></div>
-                            <div class="code-line"><span class="line-number">12</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number">13</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number">14</span><span class="code-content"><span class="keyword">fn</span> <span class="function">main</span>() -> <span class="type">i32</span> {</span></div>
-                            <div class="code-line"><span class="line-number">15</span><span class="code-content">    <span class="keyword">mut</span> x = <span class="number">10</span></span></div>
-                            <div class="code-line"><span class="line-number">16</span><span class="code-content">    <span class="keyword">mut</span> y = <span class="number">20</span></span></div>
-                            <div class="code-line"><span class="line-number">17</span><span class="code-content">    <span class="function">swap</span>(&x, &y)</span></div>
-                            <div class="code-line"><span class="line-number">18</span><span class="code-content">    <span class="function">print</span>(x, y)</span></div>
-                            <div class="code-line"><span class="line-number">19</span><span class="code-content">    <span class="keyword">return</span> <span class="number">0</span></span></div>
-                            <div class="code-line"><span class="line-number">20</span><span class="code-content">}</span></div>
-                        </div>
-                        
-                        <div class="code-body" id="adt">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment">// adt</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="keyword">type</span> <span class="type">Option</span>:[T] = <span class="type">Some</span>(T) | <span class="type">None</span></span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="keyword">type</span> <span class="type">Result</span>:[T, E] = <span class="type">Ok</span>(T) | <span class="type">Err</span>(E)</span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"><span class="keyword">fn</span> <span class="function">divide</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) -> <span class="type">Option</span>:[<span class="type">i32</span>] {</span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content">    <span class="keyword">if</span> (b == <span class="number">0</span>) { <span class="keyword">return</span> <span class="type">None</span> }</span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content">    <span class="keyword">return</span> <span class="type">Some</span>(a / b)</span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">}</span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content"><span class="keyword">fn</span> <span class="function">main</span>() -> <span class="type">i32</span> {</span></div>
-                            <div class="code-line"><span class="line-number">12</span><span class="code-content">    <span class="keyword">let</span> r = <span class="function">divide</span>(<span class="number">10</span>, <span class="number">2</span>)</span></div>
-                            <div class="code-line"><span class="line-number">13</span><span class="code-content">    <span class="keyword">match</span> (r) {</span></div>
-                            <div class="code-line"><span class="line-number">14</span><span class="code-content">        <span class="type">Some</span>(v) => { <span class="function">print</span>(v) }</span></div>
-                            <div class="code-line"><span class="line-number">15</span><span class="code-content">        <span class="type">None</span> => { <span class="function">print</span>(<span class="string">"div by zero"</span>) }</span></div>
-                            <div class="code-line"><span class="line-number">16</span><span class="code-content">    }</span></div>
-                            <div class="code-line"><span class="line-number">17</span><span class="code-content">    <span class="keyword">return</span> <span class="number">0</span></span></div>
-                            <div class="code-line"><span class="line-number">18</span><span class="code-content">}</span></div>
-                        </div>
-                    </div>
+            
+            <div style="max-width: 700px; margin: 0 auto;">
+                <div class="code-sample">
+<pre><code><span class="code-comment">// A simple Vix program</span>
+<span class="code-keyword">fn</span> <span class="code-title">main</span>() -&gt; <span class="code-keyword">i32</span> {
+    <span class="code-keyword">let</span> message = <span class="code-string">"Hello, Vix Lang!"</span>;
+    print(message);
+    <span class="code-keyword">return</span> <span class="code-string">0</span>;
+}</code></pre>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="stats">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number">90%</div>
-                <div class="stat-label">自举进度</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">3</div>
-                <div class="stat-label">平台支持</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">LLVM</div>
-                <div class="stat-label">后端</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">MIT</div>
-                <div class="stat-label">协议</div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-tag">特性</div>
-                <h2 class="section-title">语言特性</h2>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">01</div>
-                    <h3>静态类型</h3>
-                    <p>编译时类型检查。类型推断减少冗余，同时保持安全性。</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">02</div>
-                    <h3>LLVM 后端</h3>
-                    <p>通过 LLVM 生成优化机器码。性能与 C/C++ 相当。</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">03</div>
-                    <h3>泛型</h3>
-                    <p>一等公民泛型类型和函数。支持 Box、Option、Result 等。</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">04</div>
-                    <h3>ADT</h3>
-                    <p>代数数据类型。match 表达式模式匹配。</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">05</div>
-                    <h3>指针</h3>
-                    <p>指针运算和内存操作。& 取地址，@ 解引用。</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">06</div>
-                    <h3>跨平台</h3>
-                    <p>Windows、Linux、macOS。x86、ARM、RISC-V 架构。</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="comparison" id="comparison">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-tag">对比</div>
-                <h2 class="section-title">语言对比</h2>
-            </div>
-
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>特性</th>
-                        <th>VIx</th>
-                        <th>C</th>
-                        <th>Rust</th>
-                        <th>Go</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>类型系统</td>
-                        <td>静态</td>
-                        <td>静态</td>
-                        <td>静态</td>
-                        <td>静态</td>
-                    </tr>
-                    <tr>
-                        <td>泛型</td>
-                        <td class="check">支持</td>
-                        <td class="cross">不支持</td>
-                        <td class="check">支持</td>
-                        <td class="partial">有限</td>
-                    </tr>
-                    <tr>
-                        <td>内存安全</td>
-                        <td class="partial">手动</td>
-                        <td class="cross">手动</td>
-                        <td class="check">是</td>
-                        <td class="check">是</td>
-                    </tr>
-                    <tr>
-                        <td>ADT/模式匹配</td>
-                        <td class="check">支持</td>
-                        <td class="cross">不支持</td>
-                        <td class="check">支持</td>
-                        <td class="cross">不支持</td>
-                    </tr>
-                    <tr>
-                        <td>编译速度</td>
-                        <td class="partial">快</td>
-                        <td class="check">极快</td>
-                        <td class="cross">慢</td>
-                        <td class="check">极快</td>
-                    </tr>
-                    <tr>
-                        <td>运行时开销</td>
-                        <td class="check">无</td>
-                        <td class="check">无</td>
-                        <td class="check">无</td>
-                        <td class="partial">GC</td>
-                    </tr>
-                    <tr>
-                        <td>自举</td>
-                        <td class="partial">90%</td>
-                        <td class="check">完成</td>
-                        <td class="check">完成</td>
-                        <td class="check">完成</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="architecture" id="architecture">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-tag">架构</div>
-                <h2 class="section-title">编译器流程</h2>
-            </div>
-
-            <div class="arch-diagram">
-                <div class="arch-flow">
-                    <div class="arch-node source">Source Code (.vix)</div>
-                    <div class="arch-arrow">|</div>
-                    <div class="arch-node compiler">
-                        Frontend
-                        <div class="arch-nodes">
-                            <span class="arch-subnode">Lexer</span>
-                            <span class="arch-subnode">Parser</span>
-                            <span class="arch-subnode">AST</span>
-                            <span class="arch-subnode">Type Check</span>
-                        </div>
-                    </div>
-                    <div class="arch-arrow">|</div>
-                    <div class="arch-node backend">
-                        LLVM IR
-                        <div class="arch-nodes">
-                            <span class="arch-subnode">Optimization</span>
-                            <span class="arch-subnode">Codegen</span>
-                        </div>
-                    </div>
-                    <div class="arch-arrow">|</div>
-                    <div class="arch-node output">Executable</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="progress-section">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-tag">状态</div>
-                <h2 class="section-title">自举进度</h2>
-            </div>
-
-            <div class="progress-card">
-                <div class="progress-header">
-                    <h3>vixc0 自举</h3>
-                    <span class="progress-badge">阶段 0</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressBar">90%</div>
-                </div>
-                <div class="progress-items">
-                    <div class="progress-item">
-                        <span class="progress-check">1</span>
-                        <span>词法分析</span>
-                    </div>
-                    <div class="progress-item">
-                        <span class="progress-check">1</span>
-                        <span>语法分析</span>
-                    </div>
-                    <div class="progress-item">
-                        <span class="progress-check">1</span>
-                        <span>类型推断</span>
-                    </div>
-                    <div class="progress-item">
-                        <span class="progress-check">1</span>
-                        <span>IR 生成</span>
-                    </div>
-                    <div class="progress-item">
-                        <span class="progress-pending">0</span>
-                        <span>完整语言</span>
-                    </div>
-                    <div class="progress-item">
-                        <span class="progress-pending">0</span>
-                        <span>自我编译</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="philosophy" id="philosophy">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-tag">理念</div>
-                <h2 class="section-title">设计原则</h2>
-            </div>
-
-            <div class="philosophy-grid">
-                <div class="philosophy-card">
-                    <div class="philosophy-icon">S</div>
-                    <h3>简洁</h3>
-                    <p>最小语法集合。无不必要的关键字和结构。</p>
-                </div>
-
-                <div class="philosophy-card">
-                    <div class="philosophy-icon">P</div>
-                    <h3>性能</h3>
-                    <p>零成本抽象。LLVM 优化通道。</p>
-                </div>
-
-                <div class="philosophy-card">
-                    <div class="philosophy-icon">C</div>
-                    <h3>控制</h3>
-                    <p>手动内存管理。需要时进行指针操作。</p>
-                </div>
-
-                <div class="philosophy-card">
-                    <div class="philosophy-icon">R</div>
-                    <h3>实用</h3>
-                    <p>务实设计。解决实际问题，非理论问题。</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="ecosystem" id="ecosystem">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-tag">生态</div>
-                <h2 class="section-title">项目组件</h2>
-            </div>
-
-            <div class="ecosystem-grid">
-                <div class="ecosystem-item">
-                    <div class="ecosystem-icon">C</div>
-                    <div class="ecosystem-info">
-                        <h4>vixc</h4>
-                        <p>编译器</p>
-                    </div>
-                    <span class="ecosystem-status">开发中</span>
-                </div>
-
-                <div class="ecosystem-item">
-                    <div class="ecosystem-icon">B</div>
-                    <div class="ecosystem-info">
-                        <h4>vixc0</h4>
-                        <p>自举编译器</p>
-                    </div>
-                    <span class="ecosystem-status">自举中</span>
-                </div>
-
-                <a href="#very" class="ecosystem-item">
-                    <div class="ecosystem-icon">V</div>
-                    <div class="ecosystem-info">
-                        <h4>Very</h4>
-                        <p>项目管理与构建工具</p>
-                    </div>
-                    <span class="ecosystem-status">Beta</span>
-                </a>
-
-                <div class="ecosystem-item">
-                    <div class="ecosystem-icon">L</div>
-                    <div class="ecosystem-info">
-                        <h4>标准库</h4>
-                        <p>标准库</p>
-                    </div>
-                    <span class="ecosystem-status">开发中</span>
-                </div>
-
-                <div class="ecosystem-item">
-                    <div class="ecosystem-icon">E</div>
-                    <div class="ecosystem-info">
-                        <h4>VSCode</h4>
-                        <p>扩展</p>
-                    </div>
-                    <span class="ecosystem-status">Alpha</span>
-                </div>
-
-                <div class="ecosystem-item">
-                    <div class="ecosystem-icon">O</div>
-                    <div class="ecosystem-info">
-                        <h4>VixOS</h4>
-                        <p>实验性操作系统</p>
-                    </div>
-                    <span class="ecosystem-status">开发中</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="very-section" id="very">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-tag">项目管理与构建</div>
-                <h2 class="section-title">Very</h2>
-            </div>
-
-            <div class="very-content">
-                <div class="very-intro">
-                    <p class="very-desc">Very - VIx 语言的官方项目管理与构建工具。简洁、快速、可靠。</p>
-                    <div class="very-features">
-                        <div class="very-feature">
-                            <div class="very-feature-icon">+</div>
-                            <div class="very-feature-text">
-                                <h4>依赖管理</h4>
-                                <p>自动解析和安装项目依赖，支持语义化版本控制</p>
-                            </div>
-                        </div>
-                        <div class="very-feature">
-                            <div class="very-feature-icon">#</div>
-                            <div class="very-feature-text">
-                                <h4>项目初始化</h4>
-                                <p>快速创建新项目，提供标准项目模板</p>
-                            </div>
-                        </div>
-                        <div class="very-feature">
-                            <div class="very-feature-icon">@</div>
-                            <div class="very-feature-text">
-                                <h4>包发布</h4>
-                                <p>一键发布到 Very 仓库，与社区共享代码</p>
-                            </div>
-                        </div>
-                        <div class="very-feature">
-                            <div class="very-feature-icon">&gt;</div>
-                            <div class="very-feature-text">
-                                <h4>构建集成</h4>
-                                <p>与 vixc 编译器深度集成，一键构建项目</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="very-terminal">
-                    <div class="code-window">
-                        <div class="code-header">
-                            <div class="code-dot"></div>
-                            <div class="code-dot"></div>
-                            <div class="code-dot"></div>
-                            <div class="code-tabs">
-                                <button class="code-tab active" data-tab="very-init">init</button>
-                                <button class="code-tab" data-tab="very-install">install</button>
-                                <button class="code-tab" data-tab="very-build">build</button>
-                                <button class="code-tab" data-tab="very-publish">publish</button>
-                            </div>
-                        </div>
-
-                        <div class="code-body active" id="very-init">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 初始化新项目</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> init my-project</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Created new project 'my-project'</span></span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"><span class="string">Project type: binary</span></span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"><span class="comment"># 生成的项目结构</span></span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content">my-project/</span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">  <span class="keyword">├──</span> vix.toml          <span class="comment"># 项目配置</span></span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content">  <span class="keyword">├──</span> src/</span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content">  <span class="keyword">│</span>   <span class="keyword">└──</span> main.vix      <span class="comment"># 入口文件</span></span></div>
-                            <div class="code-line"><span class="line-number">12</span><span class="code-content">  <span class="keyword">└──</span> .gitignore</span></div>
-                        </div>
-
-                        <div class="code-body" id="very-install">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 安装依赖</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> add net</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Adding dependency 'net'...</span></span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"><span class="string">Resolved: net@1.2.0</span></span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"><span class="string">Installed 3 packages</span></span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"><span class="comment"># 从 vix.toml</span></span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content">[dependencies]</span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content">net = <span class="string">"1.2.0"</span></span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content">json = <span class="string">"^2.0.0"</span></span></div>
-                        </div>
-
-                        <div class="code-body" id="very-build">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 构建项目</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> build</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Compiling my-project v0.1.0</span></span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"><span class="string">Downloading dependencies...</span></span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"><span class="string">Building target/release/my-project</span></span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"><span class="string">Build completed in 2.34s</span></span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content"><span class="comment"># 运行项目</span></span></div>
-                            <div class="code-line"><span class="line-number">10</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> run</span></div>
-                            <div class="code-line"><span class="line-number">11</span><span class="code-content"><span class="string">Hello, Vix!</span></span></div>
-                        </div>
-
-                        <div class="code-body" id="very-publish">
-                            <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 发布包</span></span></div>
-                            <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> login</span></div>
-                            <div class="code-line"><span class="line-number"> 4</span><span class="code-content"><span class="string">Authenticated as: user@example.com</span></span></div>
-                            <div class="code-line"><span class="line-number"> 5</span><span class="code-content"></span></div>
-                            <div class="code-line"><span class="line-number"> 6</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> publish</span></div>
-                            <div class="code-line"><span class="line-number"> 7</span><span class="code-content"><span class="string">Packaging my-lib v1.0.0</span></span></div>
-                            <div class="code-line"><span class="line-number"> 8</span><span class="code-content"><span class="string">Uploading to registry...</span></span></div>
-                            <div class="code-line"><span class="line-number"> 9</span><span class="code-content"><span class="string">Published successfully!</span></span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="very-cta">
-                <a href="https://github.com/vixlang/ver" target="_blank" class="btn btn-primary">安装 Very</a>
-                <a href="https://github.com/vixlang/ver" target="_blank" class="btn btn-secondary">查看文档</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta">
-        <div class="container">
-            <h2>开始使用 VIx</h2>
-            <p>阅读文档，开始构建。</p>
-            <div class="hero-buttons">
-                <a href="#" class="btn btn-primary">文档</a>
-                <a href="#" class="btn btn-secondary">GitHub</a>
+    <!-- 橙色加灰色组合背景区块 -->
+    <section class="section section-orange">
+        <div class="container" style="text-align: center;">
+            <h2 data-i18n="eco_title">加入生态系统</h2>
+            <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px;" data-i18n="eco_desc">
+                依靠 Very 项目管理与构建工具，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。
+            </p>
+            <div class="hero-actions" style="justify-content: center;">
+                <a href="https://github.com/vixlang/ver" class="btn btn-secondary" data-i18n="eco_very">了解 Very 项目管理与构建工具</a>
+                <a href="/VixDocs/" class="btn btn-secondary" data-i18n="eco_doc">阅读文档</a>
             </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">VIx-Lang</div>
-                <div class="footer-links">
-                    <a href="#features">特性</a>
-                    <a href="#comparison">对比</a>
-                    <a href="#architecture">架构</a>
-                    <a href="#ecosystem">生态</a>
-                    <a href="#very">Very</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                MIT 协议。联系：popolk1871@outlook.com
-            </div>
+            <p data-i18n="footer_txt">由 VIx Lang 贡献者维护 | MIT 协议</p>
+            <p>
+                <a href="https://github.com/vixlang">GitHub</a>
+                <a href="mailto:popolk1871@outlook.com">Contact Us</a>
+            </p>
         </div>
     </footer>
 
     <script>
-        // Translations
         const translations = {
             zh: {
-                'nav.features': '特性',
-                'nav.comparison': '对比',
-                'nav.architecture': '架构',
-                'nav.philosophy': '理念',
-                'nav.ecosystem': '生态',
-                'nav.very': 'Very',
-                'nav.github': 'GitHub',
-                'hero.badge': 'BOOTSTRAP 90%',
-                'hero.title': 'VIx',
-                'hero.subtitle': '静态类型、编译型语言。使用 LLVM 后端。支持泛型、ADT、指针运算。',
-                'hero.btn1': '开始使用',
-                'hero.btn2': '文档',
-                'stats.bootstrap': '自举进度',
-                'stats.platforms': '平台支持',
-                'stats.backend': '后端',
-                'stats.license': '协议',
-                'section.features': '特性',
-                'section.featuresTitle': '语言特性',
-                'feature.1.title': '静态类型',
-                'feature.1.desc': '编译时类型检查。类型推断减少冗余，同时保持安全性。',
-                'feature.2.title': 'LLVM 后端',
-                'feature.2.desc': '通过 LLVM 生成优化机器码。性能与 C/C++ 相当。',
-                'feature.3.title': '泛型',
-                'feature.3.desc': '一等公民泛型类型和函数。支持 Box、Option、Result 等。',
-                'feature.4.title': 'ADT',
-                'feature.4.desc': '代数数据类型。match 表达式模式匹配。',
-                'feature.5.title': '指针',
-                'feature.5.desc': '指针运算和内存操作。& 取地址，@ 解引用。',
-                'feature.6.title': '跨平台',
-                'feature.6.desc': 'Windows、Linux、macOS。x86、ARM、RISC-V 架构。',
-                'section.comparison': '对比',
-                'section.comparisonTitle': '语言对比',
-                'table.feature': '特性',
-                'table.type': '类型系统',
-                'table.static': '静态',
-                'table.generics': '泛型',
-                'table.supported': '支持',
-                'table.notSupported': '不支持',
-                'table.limited': '有限',
-                'table.memory': '内存安全',
-                'table.manual': '手动',
-                'table.yes': '是',
-                'table.adapt': '模式匹配',
-                'table.compileSpeed': '编译速度',
-                'table.fast': '快',
-                'table.veryFast': '极快',
-                'table.slow': '慢',
-                'table.runtime': '运行时开销',
-                'table.none': '无',
-                'table.gc': 'GC',
-                'table.bootstrap': '自举',
-                'table.done': '完成',
-                'table.inProgress': '90%',
-                'section.architecture': '架构',
-                'section.architectureTitle': '编译器流程',
-                'arch.source': '源码 (.vix)',
-                'arch.frontend': '前端',
-                'arch.lexer': '词法分析',
-                'arch.parser': '语法分析',
-                'arch.ast': 'AST',
-                'arch.typecheck': '类型检查',
-                'arch.backend': 'LLVM IR',
-                'arch.optimization': '优化',
-                'arch.codegen': '代码生成',
-                'arch.output': '可执行文件',
-                'section.status': '状态',
-                'section.statusTitle': '自举进度',
-                'progress.title': 'vixc0 自举',
-                'progress.stage': '阶段 0',
-                'progress.lexer': '词法分析',
-                'progress.parser': '语法分析',
-                'progress.typeinf': '类型推断',
-                'progress.irgen': 'IR 生成',
-                'progress.complete': '完整语言',
-                'progress.selfhost': '自我编译',
-                'section.philosophy': '理念',
-                'section.philosophyTitle': '设计原则',
-                'phil.simplicity': '简洁',
-                'phil.simplicityDesc': '最小语法集合。无不必要的关键字和结构。',
-                'phil.performance': '性能',
-                'phil.performanceDesc': '零成本抽象。LLVM 优化通道。',
-                'phil.control': '控制',
-                'phil.controlDesc': '手动内存管理。需要时进行指针操作。',
-                'phil.reality': '实用',
-                'phil.realityDesc': '务实设计。解决实际问题，非理论问题。',
-                'section.ecosystem': '生态',
-                'section.ecosystemTitle': '项目组件',
-                'section.very': '项目管理与构建',
-                'section.veryTitle': 'Very',
-                'very.desc': 'Very - VIx 语言的官方项目管理与构建工具。简洁、快速、可靠。',
-                'very.feature1.title': '依赖管理',
-                'very.feature1.desc': '自动解析和安装项目依赖，支持语义化版本控制',
-                'very.feature2.title': '项目初始化',
-                'very.feature2.desc': '快速创建新项目，提供标准项目模板',
-                'very.feature3.title': '包发布',
-                'very.feature3.desc': '一键发布到 Very 仓库，与社区共享代码',
-                'very.feature4.title': '构建集成',
-                'very.feature4.desc': '与 vixc 编译器深度集成，一键构建项目',
-                'very.btn1': '安装 Very',
-                'very.btn2': '查看文档',
-                'eco.vixc': '编译器',
-                'eco.vixc0': '自举编译器',
-                'eco.very': '项目管理与构建工具',
-                'eco.stdlib': '标准库',
-                'eco.vscode': '扩展',
-                'eco.vixos': '实验性操作系统',
-                'eco.dev': '开发中',
-                'eco.boot': '自举中',
-                'section.cta': '开始使用 VIx',
-                'section.ctaDesc': '阅读文档，开始构建。',
-                'cta.btn1': '文档',
-                'cta.btn2': 'GitHub',
-                'footer.contact': 'MIT 协议。联系：popolk1871@outlook.com'
+                nav_doc: "文档", nav_learn: "LearnVix",
+                title: "VIx Lang",
+                desc: "一门赋予每个人构建底层、可靠且高效软件能力的语言。",
+                start: "马上开始", src: "查看源码",
+                why_title: "为什么选择 VIx?",
+                f1_t: "高性能", f1_d: "由于基于 LLVM 后端，Vix 速度惊人且内存利用率极高。它可以胜任对性能要求极高的服务，甚至可以直接在嵌入式设备上运行。",
+                f2_t: "现代类型系统", f2_d: "丰富的类型系统支持泛型与代数数据类型（ADT）。内置现代语言级别的 match 模式匹配体系以及结构体等，使得代码极具表现力。",
+                f3_t: "底层控制力", f3_d: "无缝支持指针运算和原生内存操作。使用 & 取地址，@ 解引用，在提供高级语法抽象的同时，毫不妥协对硬件的绝对掌控。",
+                build_title: "用 VIx 构建应用", build_desc: "VIx 目前正在快速发展中，语法简洁、一致。",
+                code_comment: "// [在此处插入实际的 Vix 代码示例]",
+                eco_title: "加入生态系统", eco_desc: "依靠 Very 项目管理与构建工具，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。",
+                eco_very: "了解 Very 项目管理与构建工具", eco_doc: "阅读文档",
+                footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议"
             },
             en: {
-                'nav.features': 'Features',
-                'nav.comparison': 'Comparison',
-                'nav.architecture': 'Architecture',
-                'nav.philosophy': 'Philosophy',
-                'nav.ecosystem': 'Ecosystem',
-                'nav.very': 'Very',
-                'nav.github': 'GitHub',
-                'hero.badge': 'BOOTSTRAP 90%',
-                'hero.title': 'VIx',
-                'hero.subtitle': 'Static typed, compiled language. LLVM backend. Generics, ADT, pointer arithmetic.',
-                'hero.btn1': 'Get Started',
-                'hero.btn2': 'Documentation',
-                'stats.bootstrap': 'Bootstrap',
-                'stats.platforms': 'Platforms',
-                'stats.backend': 'Backend',
-                'stats.license': 'License',
-                'section.features': 'Features',
-                'section.featuresTitle': 'Language Features',
-                'feature.1.title': 'Static Typing',
-                'feature.1.desc': 'Compile-time type checking. Type inference reduces verbosity while maintaining safety.',
-                'feature.2.title': 'LLVM Backend',
-                'feature.2.desc': 'Generates optimized machine code via LLVM. Performance comparable to C/C++.',
-                'feature.3.title': 'Generics',
-                'feature.3.desc': 'First-class generic types and functions. Works with Box, Option, Result.',
-                'feature.4.title': 'ADT',
-                'feature.4.desc': 'Algebraic data types. Pattern matching with match expressions.',
-                'feature.5.title': 'Pointers',
-                'feature.5.desc': 'Pointer arithmetic and memory operations. & for address-of, @ for dereference.',
-                'feature.6.title': 'Cross-Platform',
-                'feature.6.desc': 'Windows, Linux, macOS. x86, ARM, RISC-V architectures.',
-                'section.comparison': 'Comparison',
-                'section.comparisonTitle': 'Language Comparison',
-                'table.feature': 'Feature',
-                'table.type': 'Type System',
-                'table.static': 'Static',
-                'table.generics': 'Generics',
-                'table.supported': 'Yes',
-                'table.notSupported': 'No',
-                'table.limited': 'Limited',
-                'table.memory': 'Memory Safety',
-                'table.manual': 'Manual',
-                'table.yes': 'Yes',
-                'table.adapt': 'ADT/Pattern Match',
-                'table.compileSpeed': 'Compilation Speed',
-                'table.fast': 'Fast',
-                'table.veryFast': 'Very Fast',
-                'table.slow': 'Slow',
-                'table.runtime': 'Runtime Overhead',
-                'table.none': 'None',
-                'table.gc': 'GC',
-                'table.bootstrap': 'Bootstrap',
-                'table.done': 'Done',
-                'table.inProgress': '90%',
-                'section.architecture': 'Architecture',
-                'section.architectureTitle': 'Compiler Pipeline',
-                'arch.source': 'Source Code (.vix)',
-                'arch.frontend': 'Frontend',
-                'arch.lexer': 'Lexer',
-                'arch.parser': 'Parser',
-                'arch.ast': 'AST',
-                'arch.typecheck': 'Type Check',
-                'arch.backend': 'LLVM IR',
-                'arch.optimization': 'Optimization',
-                'arch.codegen': 'Codegen',
-                'arch.output': 'Executable',
-                'section.status': 'Status',
-                'section.statusTitle': 'Bootstrap Progress',
-                'progress.title': 'vixc0 Bootstrap',
-                'progress.stage': 'Stage 0',
-                'progress.lexer': 'Lexer',
-                'progress.parser': 'Parser',
-                'progress.typeinf': 'Type Inference',
-                'progress.irgen': 'IR Generation',
-                'progress.complete': 'Complete Language',
-                'progress.selfhost': 'Self-Hosting',
-                'section.philosophy': 'Philosophy',
-                'section.philosophyTitle': 'Design Principles',
-                'phil.simplicity': 'Simplicity',
-                'phil.simplicityDesc': 'Minimal syntax. No unnecessary keywords or constructs.',
-                'phil.performance': 'Performance',
-                'phil.performanceDesc': 'Zero-cost abstractions. LLVM optimization passes.',
-                'phil.control': 'Control',
-                'phil.controlDesc': 'Manual memory management. Pointer operations when needed.',
-                'phil.reality': 'Reality',
-                'phil.realityDesc': 'Practical design. Solves real problems, not theoretical ones.',
-                'section.ecosystem': 'Ecosystem',
-                'section.ecosystemTitle': 'Project Components',
-                'section.very': 'Project Manager & Build Tool',
-                'section.veryTitle': 'Very',
-                'very.desc': 'Very - The official project manager and build tool for VIx. Simple, fast, reliable.',
-                'very.feature1.title': 'Dependency Management',
-                'very.feature1.desc': 'Automatically resolve and install project dependencies with semantic versioning',
-                'very.feature2.title': 'Project Initialization',
-                'very.feature2.desc': 'Quickly create new projects with standard templates',
-                'very.feature3.title': 'Package Publishing',
-                'very.feature3.desc': 'Publish to Very registry with one command, share code with the community',
-                'very.feature4.title': 'Build Integration',
-                'very.feature4.desc': 'Deep integration with vixc compiler, build projects with one command',
-                'very.btn1': 'Install Very',
-                'very.btn2': 'Documentation',
-                'eco.vixc': 'Compiler',
-                'eco.vixc0': 'Bootstrap Compiler',
-                'eco.very': 'Project Manager & Build Tool',
-                'eco.stdlib': 'Standard Library',
-                'eco.vscode': 'Extension',
-                'eco.vixos': 'Experimental OS',
-                'eco.dev': 'Dev',
-                'eco.boot': 'Boot',
-                'section.cta': 'Start Using VIx',
-                'section.ctaDesc': 'Read the documentation and start building.',
-                'cta.btn1': 'Documentation',
-                'cta.btn2': 'GitHub',
-                'footer.contact': 'MIT License. Contact: popolk1871@outlook.com'
-            },
-            fr: {
-                'nav.features': 'Fonctionnalités',
-                'nav.comparison': 'Comparaison',
-                'nav.architecture': 'Architecture',
-                'nav.philosophy': 'Philosophie',
-                'nav.ecosystem': 'Écosystème',
-                'nav.very': 'Very',
-                'nav.github': 'GitHub',
-                'hero.badge': 'BOOTSTRAP 90%',
-                'hero.title': 'VIx',
-                'hero.subtitle': 'Langage compilé, typé statiquement. Backend LLVM. Génériques, ADT, arithmétique des pointeurs.',
-                'hero.btn1': 'Commencer',
-                'hero.btn2': 'Documentation',
-                'stats.bootstrap': 'Bootstrap',
-                'stats.platforms': 'Plateformes',
-                'stats.backend': 'Backend',
-                'stats.license': 'Licence',
-                'section.features': 'Fonctionnalités',
-                'section.featuresTitle': 'Caractéristiques du langage',
-                'feature.1.title': 'Typage statique',
-                'feature.1.desc': 'Vérification de type à la compilation. Inférence de type réduit la verbosité tout en conservant la sécurité.',
-                'feature.2.title': 'Backend LLVM',
-                'feature.2.desc': 'Génération de code machine optimisé via LLVM. Performances comparables à C/C++.',
-                'feature.3.title': 'Génériques',
-                'feature.3.desc': 'Types et fonctions génériques de premier ordre. Fonctionne avec Box, Option, Result.',
-                'feature.4.title': 'ADT',
-                'feature.4.desc': 'Types de données algébriques. Pattern matching avec les expressions match.',
-                'feature.5.title': 'Pointeurs',
-                'feature.5.desc': 'Arithmétique des pointeurs et opérations mémoire. & pour l\'adresse, @ pour la déréférence.',
-                'feature.6.title': 'Multiplateforme',
-                'feature.6.desc': 'Windows, Linux, macOS. Architectures x86, ARM, RISC-V.',
-                'section.comparison': 'Comparaison',
-                'section.comparisonTitle': 'Comparaison des langages',
-                'table.feature': 'Caractéristique',
-                'table.type': 'Système de type',
-                'table.static': 'Statique',
-                'table.generics': 'Génériques',
-                'table.supported': 'Oui',
-                'table.notSupported': 'Non',
-                'table.limited': 'Limité',
-                'table.memory': 'Sécurité mémoire',
-                'table.manual': 'Manuelle',
-                'table.yes': 'Oui',
-                'table.adapt': 'ADT/Pattern matching',
-                'table.compileSpeed': 'Vitesse de compilation',
-                'table.fast': 'Rapide',
-                'table.veryFast': 'Très rapide',
-                'table.slow': 'Lent',
-                'table.runtime': 'Surcoût d\'exécution',
-                'table.none': 'Aucun',
-                'table.gc': 'GC',
-                'table.bootstrap': 'Bootstrap',
-                'table.done': 'Terminé',
-                'table.inProgress': '90%',
-                'section.architecture': 'Architecture',
-                'section.architectureTitle': 'Pipeline du compilateur',
-                'arch.source': 'Code source (.vix)',
-                'arch.frontend': 'Frontend',
-                'arch.lexer': 'Analyse lexicale',
-                'arch.parser': 'Analyse syntaxique',
-                'arch.ast': 'AST',
-                'arch.typecheck': 'Vérification de type',
-                'arch.backend': 'LLVM IR',
-                'arch.optimization': 'Optimisation',
-                'arch.codegen': 'Génération de code',
-                'arch.output': 'Exécutable',
-                'section.status': 'État',
-                'section.statusTitle': 'Progression du bootstrap',
-                'progress.title': 'vixc0 Bootstrap',
-                'progress.stage': 'Étape 0',
-                'progress.lexer': 'Analyse lexicale',
-                'progress.parser': 'Analyse syntaxique',
-                'progress.typeinf': 'Inférence de type',
-                'progress.irgen': 'Génération IR',
-                'progress.complete': 'Langage complet',
-                'progress.selfhost': 'Auto-hébergement',
-                'section.philosophy': 'Philosophie',
-                'section.philosophyTitle': 'Principes de conception',
-                'phil.simplicity': 'Simplicité',
-                'phil.simplicityDesc': 'Syntaxe minimale. Aucun mot-clé ou construction inutile.',
-                'phil.performance': 'Performance',
-                'phil.performanceDesc': 'Abstractions à coût zéro. Passes d\'optimisation LLVM.',
-                'phil.control': 'Contrôle',
-                'phil.controlDesc': 'Gestion mémoire manuelle. Opérations sur pointeurs si nécessaire.',
-                'phil.reality': 'Réalité',
-                'phil.realityDesc': 'Conception pratique. Résout des problèmes réels, pas théoriques.',
-                'section.ecosystem': 'Écosystème',
-                'section.ecosystemTitle': 'Composants du projet',
-                'section.very': 'Gestionnaire de projet & outil de build',
-                'section.veryTitle': 'Very',
-                'very.desc': 'Very - Le gestionnaire de projet et outil de build officiel pour VIx. Simple, rapide, fiable.',
-                'very.feature1.title': 'Gestion des dépendances',
-                'very.feature1.desc': 'Résolution et installation automatiques des dépendances avec versioning sémantique',
-                'very.feature2.title': 'Initialisation de projet',
-                'very.feature2.desc': 'Créez rapidement de nouveaux projets avec des modèles standard',
-                'very.feature3.title': 'Publication de paquets',
-                'very.feature3.desc': 'Publiez sur le registre Very en une commande, partagez du code avec la communauté',
-                'very.feature4.title': 'Intégration de build',
-                'very.feature4.desc': 'Intégration profonde avec le compilateur vixc, construisez des projets en une commande',
-                'very.btn1': 'Installer Very',
-                'very.btn2': 'Documentation',
-                'eco.vixc': 'Compilateur',
-                'eco.vixc0': 'Compilateur bootstrap',
-                'eco.very': 'Gestionnaire de projet & outil de build',
-                'eco.stdlib': 'Bibliothèque standard',
-                'eco.vscode': 'Extension',
-                'eco.vixos': 'OS expérimental',
-                'eco.dev': 'En dev',
-                'eco.boot': 'Boot',
-                'section.cta': 'Commencer avec VIx',
-                'section.ctaDesc': 'Lisez la documentation et commencez à construire.',
-                'cta.btn1': 'Documentation',
-                'cta.btn2': 'GitHub',
-                'footer.contact': 'Licence MIT. Contact : popolk1871@outlook.com'
+                nav_doc: "Docs", nav_learn: "LearnVix",
+                title: "VIx Lang",
+                desc: "A language empowering everyone to build low-level, reliable, and efficient software.",
+                start: "Get Started", src: "View Source",
+                why_title: "Why VIx?",
+                f1_t: "High Performance", f1_d: "Based on the LLVM backend, Vix is blazingly fast and highly memory-efficient. It handles performance-critical services and runs directly on embedded devices.",
+                f2_t: "Modern Type System", f2_d: "Rich type system supporting generics and ADTs. Built-in modern pattern matching and structs make code highly expressive.",
+                f3_t: "Low-level Control", f3_d: "Seamless support for pointer arithmetic and raw memory manipulation. High-level abstractions without compromising hardware control.",
+                build_title: "Build with VIx", build_desc: "VIx is evolving rapidly with clean and consistent syntax.",
+                code_comment: "// [Insert your VIx code example here]",
+                eco_title: "Join the Ecosystem", eco_desc: "With the Very project manager and build tool, dependency resolution, compilation, and distribution become incredibly simple.",
+                eco_very: "Discover Very", eco_doc: "Read the Docs",
+                footer_txt: "Maintained by VIx Lang Contributors | MIT License"
             }
         };
 
-        let currentLang = 'zh';
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-
-            // Update all elements with data-i18n
+        function setLang(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (t[key]) el.textContent = t[key];
-            });
-
-            // Update elements with specific IDs
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (t[key]) el.textContent = t[key];
-            });
-
-            // Update hero badge
-            const badge = document.querySelector('.hero-badge');
-            if (badge && t['hero.badge']) badge.textContent = t['hero.badge'];
-
-            // Update hero subtitle
-            const subtitle = document.querySelector('.hero-subtitle');
-            if (subtitle && t['hero.subtitle']) subtitle.textContent = t['hero.subtitle'];
-
-            // Update buttons
-            const btns = document.querySelectorAll('.hero-buttons .btn');
-            if (btns[0] && t['hero.btn1']) btns[0].textContent = t['hero.btn1'];
-            if (btns[1] && t['hero.btn2']) btns[1].textContent = t['hero.btn2'];
-
-            // Update stats
-            document.querySelectorAll('.stat-label').forEach((el, i) => {
-                const keys = ['stats.bootstrap', 'stats.platforms', 'stats.backend', 'stats.license'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            // Update section headers
-            document.querySelectorAll('.section-tag').forEach((el, i) => {
-                const keys = ['section.features', 'section.comparison', 'section.architecture', 'section.status', 'section.philosophy', 'section.ecosystem', 'section.very'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            document.querySelectorAll('.section-title').forEach((el, i) => {
-                const keys = ['section.featuresTitle', 'section.comparisonTitle', 'section.architectureTitle', 'section.statusTitle', 'section.philosophyTitle', 'section.ecosystemTitle', 'section.veryTitle'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            // Update feature cards
-            document.querySelectorAll('.feature-card h3').forEach((el, i) => {
-                const key = `feature.${i+1}.title`;
-                if (t[key]) el.textContent = t[key];
-            });
-            document.querySelectorAll('.feature-card p').forEach((el, i) => {
-                const key = `feature.${i+1}.desc`;
-                if (t[key]) el.textContent = t[key];
-            });
-
-            // Update comparison table
-            const table = document.querySelector('.comparison-table');
-            if (table) {
-                const ths = table.querySelectorAll('th');
-                const keys = ['table.feature', 'table.type', 'table.generics', 'table.memory', 'table.adapt', 'table.compileSpeed', 'table.runtime', 'table.bootstrap'];
-                ths.forEach((th, i) => {
-                    if (t[keys[i]]) th.textContent = t[keys[i]];
-                });
-
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach((row, ri) => {
-                    const cells = row.querySelectorAll('td');
-                    cells.forEach((cell, ci) => {
-                        if (ci === 0) {
-                            const rowKeys = ['table.type', 'table.generics', 'table.memory', 'table.adapt', 'table.compileSpeed', 'table.runtime', 'table.bootstrap'];
-                            if (t[rowKeys[ri]]) cell.textContent = t[rowKeys[ri]];
-                        } else {
-                            const original = cell.textContent;
-                            if (original === '静态' || original === '支持' || original === '手动' || original === '是' || original === '快' || original === '极快' || original === '无' || original === '完成' || original === '90%') {
-                                // was Chinese, now translate
-                            }
-                        }
-                    });
-                });
-            }
-
-            // Update architecture
-            const archNodes = document.querySelectorAll('.arch-node');
-            const archKeys = ['arch.source', 'arch.frontend', 'arch.backend', 'arch.output'];
-            archNodes.forEach((node, i) => {
-                if (t[archKeys[i]]) {
-                    node.firstChild.textContent = t[archKeys[i]];
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
                 }
             });
-
-            const archSubnodes = document.querySelectorAll('.arch-subnode');
-            const archSubKeys = ['arch.lexer', 'arch.parser', 'arch.ast', 'arch.typecheck', 'arch.optimization', 'arch.codegen'];
-            archSubnodes.forEach((node, i) => {
-                if (t[archSubKeys[i]]) node.textContent = t[archSubKeys[i]];
-            });
-
-            // Update progress
-            const progressTitle = document.querySelector('.progress-header h3');
-            if (progressTitle && t['progress.title']) progressTitle.textContent = t['progress.title'];
-
-            const progressBadge = document.querySelector('.progress-badge');
-            if (progressBadge && t['progress.stage']) progressBadge.textContent = t['progress.stage'];
-
-            document.querySelectorAll('.progress-item span:last-child').forEach((el, i) => {
-                const keys = ['progress.lexer', 'progress.parser', 'progress.typeinf', 'progress.irgen', 'progress.complete', 'progress.selfhost'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            // Update philosophy
-            document.querySelectorAll('.philosophy-card h3').forEach((el, i) => {
-                const keys = ['phil.simplicity', 'phil.performance', 'phil.control', 'phil.reality'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-            document.querySelectorAll('.philosophy-card p').forEach((el, i) => {
-                const keys = ['phil.simplicityDesc', 'phil.performanceDesc', 'phil.controlDesc', 'phil.realityDesc'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            // Update ecosystem
-            document.querySelectorAll('.ecosystem-info p').forEach((el, i) => {
-                const keys = ['eco.vixc', 'eco.vixc0', 'eco.very', 'eco.stdlib', 'eco.vscode', 'eco.vixos'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-            document.querySelectorAll('.ecosystem-status').forEach((el, i) => {
-                const keys = ['eco.dev', 'eco.boot', 'eco.dev', 'eco.dev', 'eco.dev', 'eco.dev'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            // Update very section
-            const veryDesc = document.querySelector('.very-desc');
-            if (veryDesc && t['very.desc']) veryDesc.textContent = t['very.desc'];
-
-            document.querySelectorAll('.very-feature-text h4').forEach((el, i) => {
-                const keys = ['very.feature1.title', 'very.feature2.title', 'very.feature3.title', 'very.feature4.title'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            document.querySelectorAll('.very-feature-text p').forEach((el, i) => {
-                const keys = ['very.feature1.desc', 'very.feature2.desc', 'very.feature3.desc', 'very.feature4.desc'];
-                if (t[keys[i]]) el.textContent = t[keys[i]];
-            });
-
-            const veryBtns = document.querySelectorAll('.very-cta .btn');
-            if (veryBtns[0] && t['very.btn1']) veryBtns[0].textContent = t['very.btn1'];
-            if (veryBtns[1] && t['very.btn2']) veryBtns[1].textContent = t['very.btn2'];
-
-            // Update CTA
-            const ctaH2 = document.querySelector('.cta h2');
-            if (ctaH2 && t['section.cta']) ctaH2.textContent = t['section.cta'];
-            const ctaP = document.querySelector('.cta p');
-            if (ctaP && t['section.ctaDesc']) ctaP.textContent = t['section.ctaDesc'];
-            const ctaBtns = document.querySelectorAll('.cta .hero-buttons .btn');
-            if (ctaBtns[0] && t['cta.btn1']) ctaBtns[0].textContent = t['cta.btn1'];
-            if (ctaBtns[1] && t['cta.btn2']) ctaBtns[1].textContent = t['cta.btn2'];
-
-            // Update footer
-            const footerBottom = document.querySelector('.footer-bottom');
-            if (footerBottom && t['footer.contact']) footerBottom.textContent = t['footer.contact'];
-
-            // Update lang buttons
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('data-lang') === lang) {
-                    btn.classList.add('active');
-                }
-            });
-
-            // Save preference
-            localStorage.setItem('vix-lang-pref', lang);
+            document.getElementById('btn-zh').className = lang === 'zh' ? 'active' : '';
+            document.getElementById('btn-en').className = lang === 'en' ? 'active' : '';
+            document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
         }
-
-        // Language selector click
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const lang = this.getAttribute('data-lang');
-                setLanguage(lang);
-            });
-        });
-
-        // Load saved preference
-        const savedLang = localStorage.getItem('vix-lang-pref');
-        if (savedLang && translations[savedLang]) {
-            setLanguage(savedLang);
-        }
-
-        // Mobile menu toggle
-        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-        const navLinks = document.querySelector('.nav-links');
-        const langSelector = document.querySelector('.lang-selector');
-
-        mobileMenuBtn.addEventListener('click', function() {
-            this.classList.toggle('active');
-            navLinks.classList.toggle('active');
-            langSelector.classList.toggle('active');
-        });
-
-        // Close mobile menu when clicking a link
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() {
-                mobileMenuBtn.classList.remove('active');
-                navLinks.classList.remove('active');
-                langSelector.classList.remove('active');
-            });
-        });
-
-        // Tab switching
-        document.querySelectorAll('.code-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-                const parentWindow = this.closest('.code-window');
-                
-                if (parentWindow) {
-                    parentWindow.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
-                    parentWindow.querySelectorAll('.code-body').forEach(b => b.classList.remove('active'));
-                    
-                    this.classList.add('active');
-                    const targetBody = parentWindow.querySelector('#' + tabId);
-                    if (targetBody) targetBody.classList.add('active');
-                }
-            });
-        });
-
-        // Progress bar animation
-        setTimeout(() => {
-            const progressBar = document.getElementById('progressBar');
-            if (progressBar) progressBar.style.width = '90%';
-        }, 500);
-
-        // Scroll animations
-        const observerOptions = { threshold: 0.1 };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.section-header, .feature-card, .philosophy-card, .ecosystem-item, .stat-item').forEach(el => {
-            el.classList.add('animate-on-scroll');
-            observer.observe(el);
-        });
-
-        // 3D card effect on mousemove
-        document.querySelectorAll('.card-3d').forEach(card => {
-            card.addEventListener('mousemove', function(e) {
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 20;
-                const rotateY = (centerX - x) / 20;
-                
-                this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
-            });
-        });
     </script>
 </body>
 </html>
