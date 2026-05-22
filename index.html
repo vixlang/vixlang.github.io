@@ -1052,34 +1052,34 @@
             transform: translateZ(40px) rotateX(-5deg);
         }
 
-        /* VPM Section */
-        .vpm-section {
+        /* Very Section */
+        .very-section {
             padding: 120px 24px;
             background: var(--bg-2);
             border-top: 1px solid var(--border);
         }
 
-        .vpm-content {
+        .very-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 64px;
             align-items: start;
         }
 
-        .vpm-desc {
+        .very-desc {
             font-size: 1.1rem;
             color: var(--text);
             margin-bottom: 48px;
             line-height: 1.7;
         }
 
-        .vpm-features {
+        .very-features {
             display: flex;
             flex-direction: column;
             gap: 24px;
         }
 
-        .vpm-feature {
+        .very-feature {
             display: flex;
             gap: 20px;
             padding: 24px;
@@ -1089,13 +1089,13 @@
             transform-style: preserve-3d;
         }
 
-        .vpm-feature:hover {
+        .very-feature:hover {
             background: var(--bg-3);
             transform: translateX(10px) translateZ(10px);
             border-color: var(--text);
         }
 
-        .vpm-feature-icon {
+        .very-feature-icon {
             width: 48px;
             height: 48px;
             border: 1px solid var(--border);
@@ -1110,40 +1110,40 @@
             transition: all 0.3s ease;
         }
 
-        .vpm-feature:hover .vpm-feature-icon {
+        .very-feature:hover .very-feature-icon {
             border-color: var(--text-bright);
             background: var(--text-bright);
             color: var(--bg);
         }
 
-        .vpm-feature-text h4 {
+        .very-feature-text h4 {
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-bright);
             margin-bottom: 6px;
         }
 
-        .vpm-feature-text p {
+        .very-feature-text p {
             font-size: 0.85rem;
             color: var(--text);
             line-height: 1.6;
         }
 
-        .vpm-terminal {
+        .very-terminal {
             perspective: 1200px;
         }
 
-        .vpm-terminal .code-window {
+        .very-terminal .code-window {
             transform-style: preserve-3d;
             transform: rotateX(4deg) rotateY(-2deg);
             transition: transform 0.4s ease;
         }
 
-        .vpm-terminal .code-window:hover {
+        .very-terminal .code-window:hover {
             transform: rotateX(2deg) rotateY(-1deg) translateZ(20px);
         }
 
-        .vpm-cta {
+        .very-cta {
             display: flex;
             gap: 16px;
             justify-content: center;
@@ -1151,26 +1151,26 @@
         }
 
         @media (max-width: 968px) {
-            .vpm-content {
+            .very-content {
                 grid-template-columns: 1fr;
                 gap: 48px;
             }
 
-            .vpm-terminal .code-window {
+            .very-terminal .code-window {
                 transform: none;
             }
 
-            .vpm-terminal .code-window:hover {
+            .very-terminal .code-window:hover {
                 transform: translateZ(10px);
             }
         }
 
         @media (max-width: 768px) {
-            .vpm-cta {
+            .very-cta {
                 flex-direction: column;
             }
 
-            .vpm-cta .btn {
+            .very-cta .btn {
                 text-align: center;
             }
         }
@@ -1641,7 +1641,7 @@
                     <div class="ecosystem-icon">V</div>
                     <div class="ecosystem-info">
                         <h4>Very</h4>
-                        <p>包管理器</p>
+                        <p>项目管理与构建工具</p>
                     </div>
                     <span class="ecosystem-status">Beta</span>
                 </a>
@@ -1676,41 +1676,41 @@
         </div>
     </section>
 
-    <section class="vpm-section" id="very">
+    <section class="very-section" id="very">
         <div class="container">
             <div class="section-header">
                 <div class="section-tag">项目管理与构建</div>
                 <h2 class="section-title">Very</h2>
             </div>
 
-            <div class="vpm-content">
-                <div class="vpm-intro">
-                    <p class="vpm-desc">Very - VIx 语言的官方项目管理与构建工具。简洁、快速、可靠。</p>
-                    <div class="vpm-features">
-                        <div class="vpm-feature">
-                            <div class="vpm-feature-icon">+</div>
-                            <div class="vpm-feature-text">
+            <div class="very-content">
+                <div class="very-intro">
+                    <p class="very-desc">Very - VIx 语言的官方项目管理与构建工具。简洁、快速、可靠。</p>
+                    <div class="very-features">
+                        <div class="very-feature">
+                            <div class="very-feature-icon">+</div>
+                            <div class="very-feature-text">
                                 <h4>依赖管理</h4>
                                 <p>自动解析和安装项目依赖，支持语义化版本控制</p>
                             </div>
                         </div>
-                        <div class="vpm-feature">
-                            <div class="vpm-feature-icon">#</div>
-                            <div class="vpm-feature-text">
+                        <div class="very-feature">
+                            <div class="very-feature-icon">#</div>
+                            <div class="very-feature-text">
                                 <h4>项目初始化</h4>
                                 <p>快速创建新项目，提供标准项目模板</p>
                             </div>
                         </div>
-                        <div class="vpm-feature">
-                            <div class="vpm-feature-icon">@</div>
-                            <div class="vpm-feature-text">
+                        <div class="very-feature">
+                            <div class="very-feature-icon">@</div>
+                            <div class="very-feature-text">
                                 <h4>包发布</h4>
                                 <p>一键发布到 Very 仓库，与社区共享代码</p>
                             </div>
                         </div>
-                        <div class="vpm-feature">
-                            <div class="vpm-feature-icon">&gt;</div>
-                            <div class="vpm-feature-text">
+                        <div class="very-feature">
+                            <div class="very-feature-icon">&gt;</div>
+                            <div class="very-feature-text">
                                 <h4>构建集成</h4>
                                 <p>与 vixc 编译器深度集成，一键构建项目</p>
                             </div>
@@ -1718,21 +1718,21 @@
                     </div>
                 </div>
 
-                <div class="vpm-terminal">
+                <div class="very-terminal">
                     <div class="code-window">
                         <div class="code-header">
                             <div class="code-dot"></div>
                             <div class="code-dot"></div>
                             <div class="code-dot"></div>
                             <div class="code-tabs">
-                                <button class="code-tab active" data-tab="vpm-init">init</button>
-                                <button class="code-tab" data-tab="vpm-install">install</button>
-                                <button class="code-tab" data-tab="vpm-build">build</button>
-                                <button class="code-tab" data-tab="vpm-publish">publish</button>
+                                <button class="code-tab active" data-tab="very-init">init</button>
+                                <button class="code-tab" data-tab="very-install">install</button>
+                                <button class="code-tab" data-tab="very-build">build</button>
+                                <button class="code-tab" data-tab="very-publish">publish</button>
                             </div>
                         </div>
 
-                        <div class="code-body active" id="vpm-init">
+                        <div class="code-body active" id="very-init">
                             <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 初始化新项目</span></span></div>
                             <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
                             <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> init my-project</span></div>
@@ -1747,7 +1747,7 @@
                             <div class="code-line"><span class="line-number">12</span><span class="code-content">  <span class="keyword">└──</span> .gitignore</span></div>
                         </div>
 
-                        <div class="code-body" id="vpm-install">
+                        <div class="code-body" id="very-install">
                             <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 安装依赖</span></span></div>
                             <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
                             <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> add net</span></div>
@@ -1761,7 +1761,7 @@
                             <div class="code-line"><span class="line-number">11</span><span class="code-content">json = <span class="string">"^2.0.0"</span></span></div>
                         </div>
 
-                        <div class="code-body" id="vpm-build">
+                        <div class="code-body" id="very-build">
                             <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 构建项目</span></span></div>
                             <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
                             <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> build</span></div>
@@ -1775,7 +1775,7 @@
                             <div class="code-line"><span class="line-number">11</span><span class="code-content"><span class="string">Hello, Vix!</span></span></div>
                         </div>
 
-                        <div class="code-body" id="vpm-publish">
+                        <div class="code-body" id="very-publish">
                             <div class="code-line"><span class="line-number"> 1</span><span class="code-content"><span class="comment"># 发布包</span></span></div>
                             <div class="code-line"><span class="line-number"> 2</span><span class="code-content"></span></div>
                             <div class="code-line"><span class="line-number"> 3</span><span class="code-content"><span class="variable">$</span> <span class="function">very</span> login</span></div>
@@ -1790,7 +1790,7 @@
                 </div>
             </div>
 
-            <div class="vpm-cta">
+            <div class="very-cta">
                 <a href="https://github.com/vixlang/ver" target="_blank" class="btn btn-primary">安装 Very</a>
                 <a href="https://github.com/vixlang/ver" target="_blank" class="btn btn-secondary">查看文档</a>
             </div>
@@ -2308,20 +2308,20 @@
             });
 
             // Update very section
-            const veryDesc = document.querySelector('.vpm-desc');
+            const veryDesc = document.querySelector('.very-desc');
             if (veryDesc && t['very.desc']) veryDesc.textContent = t['very.desc'];
 
-            document.querySelectorAll('.vpm-feature-text h4').forEach((el, i) => {
+            document.querySelectorAll('.very-feature-text h4').forEach((el, i) => {
                 const keys = ['very.feature1.title', 'very.feature2.title', 'very.feature3.title', 'very.feature4.title'];
                 if (t[keys[i]]) el.textContent = t[keys[i]];
             });
 
-            document.querySelectorAll('.vpm-feature-text p').forEach((el, i) => {
+            document.querySelectorAll('.very-feature-text p').forEach((el, i) => {
                 const keys = ['very.feature1.desc', 'very.feature2.desc', 'very.feature3.desc', 'very.feature4.desc'];
                 if (t[keys[i]]) el.textContent = t[keys[i]];
             });
 
-            const veryBtns = document.querySelectorAll('.vpm-cta .btn');
+            const veryBtns = document.querySelectorAll('.very-cta .btn');
             if (veryBtns[0] && t['very.btn1']) veryBtns[0].textContent = t['very.btn1'];
             if (veryBtns[1] && t['very.btn2']) veryBtns[1].textContent = t['very.btn2'];
 
