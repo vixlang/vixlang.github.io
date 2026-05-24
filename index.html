@@ -2,13 +2,12 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <title>VIx Lang</title>
+    <title>Vix Lang</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="description" content="一门静态类型、编译型语言。使用 LLVM 后端，支持泛型、ADT、指针运算。">
-    
+    <meta name="description" content="一门静态类型、编译型语言。使用 LLVM 后端，支持泛型、ADT、模式匹配、指针运算。">
+
     <style>
         :root {
-            /* 蓝色调的活力灰与中等明度橙色主题 */
             --bg: #353b45;
             --bg-alt: #3e4652;
             --text-main: #f5f5f5;
@@ -16,87 +15,384 @@
             --border: #5c6678;
             --orange: #e67e22;
             --orange-hover: #d35400;
+            --orange-light: #ffd6c2;
             --gray-dark: #282c33;
             --link: #e67e22;
         }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            color: var(--text-main); 
-            background: var(--bg); 
-            line-height: 1.6; 
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            background: var(--bg);
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
         }
-        
+
         a { color: var(--link); text-decoration: none; }
         a:hover { text-decoration: underline; }
-        
-        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-        
-        nav { display: flex; justify-content: flex-end; align-items: center; padding: 20px 0; position: relative; min-height: 70px; }
-        .brand { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 2rem; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px;}
-        .brand img { height: 72px; }
-        
-        .nav-right { display: flex; align-items: center; gap: 24px; }
-        
-        .nav-links { display: flex; gap: 24px; list-style: none; margin: 0; padding: 0; }
-        .nav-links a { color: var(--text-main); font-weight: 500; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        /* Nav */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            min-height: 70px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            color: var(--text-main);
+            text-decoration: none;
+            margin-left: -16px;
+        }
+        .brand img { height: 64px; }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-links a {
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
         .nav-links a:hover { color: var(--orange); text-decoration: none; }
 
-        .lang-switch { display: flex; gap: 10px; background: var(--gray-dark); padding: 6px 12px; border-radius: 4px; font-size: 0.85em; font-weight: bold;}
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+            background: var(--gray-dark);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
         .lang-switch a { cursor: pointer; color: var(--text-muted); }
-        .lang-switch a:hover, .lang-switch a.active { color: var(--orange); text-decoration: none;}
+        .lang-switch a:hover, .lang-switch a.active { color: var(--orange); text-decoration: none; }
 
-        .hero { padding: 80px 0 100px 0; display: flex; align-items: center; justify-content: space-between; gap: 40px; text-align: left; }
-        .hero-code { flex: 1; min-width: 0; }
-        .hero-text { flex: 1; min-width: 0; }
-        
-        .hero h1 { font-size: 4.5rem; margin: 0 0 20px 0; letter-spacing: -0.05em; font-weight: 900; color: var(--orange); }
-        .hero p { font-size: 1.5rem; color: var(--text-muted); margin: 0 0 40px 0; line-height: 1.4;}
-        .hero-actions { display: flex; gap: 20px; }
-        
-        .btn { display: inline-block; padding: 12px 24px; font-size: 1.1rem; font-weight: bold; border-radius: 6px; text-decoration: none !important; transition: all 0.2s; }
-        .btn-primary { background: var(--orange); color: #fff; border: 2px solid var(--orange); }
+        /* Hero */
+        .hero {
+            padding: 50px 0 80px;
+        }
+        .hero-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
+        }
+        .hero-main { flex: 1.2; padding-left: 60px; }
+        .hero-code { flex: 1; min-width: 0; margin-left: -20px; }
+
+        .hero h1 {
+            font-size: 7rem;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.05em;
+            font-weight: 900;
+            color: var(--orange);
+        }
+        .hero h2 {
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 6px;
+            text-decoration: none !important;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-primary {
+            background: var(--orange);
+            color: #fff;
+            border: 2px solid var(--orange);
+        }
         .btn-primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); }
-        .btn-secondary { background: transparent; color: var(--text-main); border: 2px solid var(--border); }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 2px solid var(--border);
+        }
         .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
-        
-        .section { padding: 80px 0; border-top: 1px solid var(--border); }
-        .section-bg { background: var(--bg-alt); }
-        .section-orange { background: var(--orange); color: #fff; border-top: none; }
-        .section-orange h2 { color: #fff; }
-        .section-orange p { color: #ffd6c2; }
-        .section-orange .btn-secondary { border-color: rgba(255,255,255,0.4); color: #fff;}
-        .section-orange .btn-secondary:hover { background: #fff; color: var(--orange); }
 
-        .section h2 { font-size: 2.5rem; margin-top: 0; margin-bottom: 40px; text-align: center; letter-spacing: -0.02em; color: var(--text-main); }
-        
-        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
-        .feature h3 { font-size: 1.5rem; margin-top: 0; margin-bottom: 12px; color: var(--orange); }
-        .feature p { margin: 0; color: var(--text-muted); }
-
-        .code-sample { background: var(--gray-dark); border: 1px solid var(--border); border-radius: 6px; padding: 20px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95rem; line-height: 1.5; text-align: left; }
-        .code-sample pre { margin: 0; color: #e6edf3;}
+        .code-sample {
+            background: var(--gray-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 0.9rem;
+            line-height: 1.55;
+            text-align: left;
+        }
+        .code-sample pre { margin: 0; color: #e6edf3; }
         .code-keyword { color: #ff7b72; }
         .code-title { color: #d2a8ff; }
         .code-string { color: #a5d6ff; }
         .code-comment { color: #8b949e; }
-        
-        footer { padding: 40px 0; background: var(--gray-dark); text-align: center; color: var(--text-muted); }
-        footer p { margin: 10px 0;}
-        footer a { color: var(--text-muted); text-decoration: underline; margin: 0 10px; }
+
+        /* Sections */
+        .section { padding: 70px 0; }
+        .section-green { background: #2d3a2d; }
+        .section-purple { background: #3a2d3a; }
+        .section-orange-bg { background: var(--orange); color: #fff; }
+        .section-orange-bg h2,
+        .section-orange-bg h3 { color: #fff; }
+        .section-orange-bg p { color: var(--orange-light); }
+        .section-orange-bg a { color: #fff; text-decoration: underline; }
+
+        .section h2 {
+            font-size: 2.2rem;
+            margin-top: 0;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+        .highlight-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--orange);
+            margin-bottom: 40px;
+        }
+        .section-orange-bg .highlight-bar { background: #fff; }
+
+        /* Why */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+        .why-card h3 {
+            font-size: 1.4rem;
+            margin: 0 0 12px 0;
+            color: var(--orange);
+        }
+        .why-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* Build */
+        .build-intro {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+        .build-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+        .build-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .build-card h3 {
+            font-size: 1.2rem;
+            margin: 0;
+            color: var(--orange);
+        }
+        .build-card p {
+            flex-grow: 1;
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .build-card .btn-secondary {
+            margin-top: auto;
+            align-self: flex-start;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+        }
+
+        /* Production */
+        .production { background: var(--bg-alt); }
+        .production p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 900px;
+        }
+
+        /* Community */
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+        .community-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .community-card h3 {
+            font-size: 1.4rem;
+            margin: 0;
+            color: #fff;
+        }
+        .community-card p {
+            flex-grow: 1;
+            margin: 0;
+            color: var(--orange-light);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .community-card .btn-secondary {
+            margin-top: auto;
+            align-self: flex-start;
+            border-color: rgba(255,255,255,0.4);
+            color: #fff;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+        }
+        .community-card .btn-secondary:hover {
+            background: #fff;
+            color: var(--orange);
+            border-color: #fff;
+        }
+        .community-full {
+            margin-top: 20px;
+        }
+        .community-full h3 {
+            font-size: 1.4rem;
+            margin: 0 0 12px 0;
+            color: #fff;
+        }
+        .community-full p {
+            color: var(--orange-light);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+        }
+
+        /* Thanks */
+        .thanks { background: var(--bg-alt); }
+        .thanks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+        }
+        .thanks-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .thanks-card h3 {
+            font-size: 1.3rem;
+            margin: 0;
+            color: var(--orange);
+        }
+        .thanks-card p {
+            flex-grow: 1;
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .thanks-card .btn-secondary {
+            margin-top: auto;
+            align-self: flex-start;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--gray-dark);
+            padding: 60px 0 30px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-col h4 {
+            font-size: 1.1rem;
+            margin: 0 0 16px 0;
+            color: var(--text-main);
+        }
+        .footer-col ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-col li { margin-bottom: 10px; }
+        .footer-col a {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .footer-col a:hover { color: var(--orange); text-decoration: none; }
+        .social-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .social-row a {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .social-row a:hover { color: var(--orange); }
+
+        .attribution {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+        }
+        .attribution p { margin: 6px 0; }
+        .attribution a { color: var(--text-muted); }
 
         @media (max-width: 768px) {
-            .hero { flex-direction: column-reverse; text-align: center; }
-            .hero h1 { font-size: 3.5rem; }
-            .hero p { font-size: 1.25rem; }
-            .hero-actions { flex-direction: column; width: 100%; }
-            .hero-actions .btn { width: 100%; box-sizing: border-box; }
+            .hero-inner { flex-direction: column; text-align: center; }
+            .hero-main { padding-left: 0; }
+            .hero h1 { font-size: 5rem; }
+            .hero h2 { font-size: 1.3rem; }
+            .hero-actions { justify-content: center; }
+            .hero-code { width: 100%; text-align: left; margin-left: 0; }
             .nav-right { flex-direction: column; gap: 10px; align-items: flex-end; }
-            .nav-links { gap: 15px; }
-            .hero-code { width: 100%; text-align: left; }
+            .nav-links { gap: 12px; font-size: 0.85rem; }
+            .why-grid, .build-grid, .community-grid, .thanks-grid, .footer-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -104,14 +400,14 @@
     <div class="container">
         <nav>
             <a href="#" class="brand">
-                <img src="logo.png" alt="VIx Lang">
-                VIx
+                <img src="logo.png" alt="Vix Lang Logo">
+                <span>Vix</span>
             </a>
             <div class="nav-right">
                 <ul class="nav-links">
                     <li><a href="/VixDocs/" data-i18n="nav_doc">文档</a></li>
                     <li><a href="https://github.com/vixlang/VixDocs" data-i18n="nav_learn">LearnVix</a></li>
-                    <li><a href="https://github.com/vixlang/Xpm">XPM</a></li>
+                    <li><a href="https://github.com/vixlang/Very">XPM</a></li>
                     <li><a href="https://github.com/vixlang/Vix-lang">GitHub</a></li>
                 </ul>
                 <div class="lang-switch">
@@ -124,96 +420,182 @@
 
     <div class="container">
         <header class="hero">
-            <div class="hero-code">
-                <div class="code-sample">
-<pre><code><span class="code-keyword">type</span> <span class="code-title">List</span> = <span class="code-keyword">struct</span> 
-{
-    head: i32,
-    tail: &amp;<span class="code-title">List</span>
+            <div class="hero-inner">
+                <div class="hero-main">
+                    <h1 data-i18n="title">Vix</h1>
+                    <h2 data-i18n="desc">赋予每个人构建简洁、<br class="dn db-ns">可靠且高效系统软件的能力。</h2>
+                    <div class="hero-actions">
+                        <a href="https://github.com/vixlang/Vix-lang/releases/tag/v0.2.1" class="btn btn-primary" data-i18n="start">马上开始</a>
+                        <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary" data-i18n="src">查看源码</a>
+                    </div>
+                </div>
+                <div class="hero-code">
+                    <div class="code-sample">
+<pre><code><span class="code-keyword">fn</span> <span class="code-title">find</span>(arr: [i32], target: i32): ?i32 {
+    <span class="code-keyword">for</span> (i <span class="code-keyword">in</span> 0 .. arr.length) {
+        <span class="code-keyword">if</span> (arr[i] == target) {
+            <span class="code-keyword">return</span> <span class="code-title">Some</span>(i)
+        }
+    }
+    <span class="code-keyword">return</span> <span class="code-title">None</span>
 }
 
-<span class="code-keyword">fn</span> <span class="code-title">main</span>(): i32 
-{
-    <span class="code-keyword">let</span> l = <span class="code-title">List</span>{ head: 1, tail: &amp;<span class="code-title">List</span>{ head: 2, tail: &amp;<span class="code-title">List</span>{ head: 3, tail: <span class="code-keyword">nil</span> } } }
-    print(l.head)
-    print(l.tail.head)
-    print(l.tail.tail.head)
+<span class="code-keyword">fn</span> <span class="code-title">main</span>(): i32 {
+    <span class="code-keyword">let</span> arr = [10, 20, 30, 40, 50]
+
+    <span class="code-keyword">match</span> find(arr, 30) {
+        <span class="code-title">Some</span>(idx) -&gt; print(<span class="code-string">"Found at index: "</span>, idx)
+        <span class="code-title">None</span>      -&gt; print(<span class="code-string">"Not found"</span>)
+    }
+
+    <span class="code-keyword">match</span> find(arr, 99) {
+        <span class="code-title">Some</span>(idx) -&gt; print(<span class="code-string">"Found at index: "</span>, idx)
+        <span class="code-title">None</span>      -&gt; print(<span class="code-string">"Not found"</span>)
+    }
     <span class="code-keyword">return</span> 0
 }</code></pre>
-                </div>
-            </div>
-            <div class="hero-text">
-                <h1 data-i18n="title">VIx Lang</h1>
-                <p data-i18n="desc">一门赋予每个人构建底层、可靠且高效软件能力的语言。</p>
-                <div class="hero-actions">
-                    <a href="/VixDocs/zh_CN/getting-started.html" class="btn btn-primary" data-i18n="start">马上开始</a>
-                    <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary" data-i18n="src">查看源码</a>
+                    </div>
                 </div>
             </div>
         </header>
     </div>
 
-    <section class="section section-bg">
+    <section class="section section-green">
         <div class="container">
-            <h2 data-i18n="why_title">为什么选择 VIx?</h2>
-            <div class="features">
-                <div class="feature">
-                    <h3 data-i18n="f1_t">高性能</h3>
-                    <p data-i18n="f1_d">由于基于 LLVM 后端，VIx 速度惊人且内存利用率极高。它可以胜任对性能要求极高的服务，甚至可以直接在嵌入式设备上运行。</p>
+            <h2 data-i18n="why_title">为什么选择 Vix?</h2>
+            <div class="highlight-bar"></div>
+            <div class="why-grid">
+                <div class="why-card">
+                    <h3 data-i18n="f1_t">编译即优化</h3>
+                    <p data-i18n="f1_d">基于 LLVM 后端，Vix 在编译期完成大量优化。没有沉重的运行时负担，生成的二进制文件精简高效，启动速度毫秒级。</p>
                 </div>
-                <div class="feature">
-                    <h3 data-i18n="f2_t">现代类型系统</h3>
-                    <p data-i18n="f2_d">丰富的类型系统支持泛型与代数数据类型（ADT）。内置现代语言级别的 match 模式匹配体系以及结构体等，使得代码极具表现力。</p>
+                <div class="why-card">
+                    <h3 data-i18n="f2_t">模式匹配与 ADT</h3>
+                    <p data-i18n="f2_d">原生支持代数数据类型和强大的 match 表达式，让状态处理变得直观且穷尽。编译器会提醒你漏掉的每一种情况，而不是在运行时崩溃。</p>
                 </div>
-                <div class="feature">
-                    <h3 data-i18n="f3_t">底层控制力</h3>
-                    <p data-i18n="f3_d">无缝支持指针运算和原生内存操作。使用 &amp; 取地址，@ 解引用，在提供高级语法抽象的同时，毫不妥协对硬件的绝对掌控。</p>
+                <div class="why-card">
+                    <h3 data-i18n="f3_t">可控的底层能力</h3>
+                    <p data-i18n="f3_d">需要操作原始内存？Vix 提供指针运算和手动内存管理的能力。不需要时，现代化的语法和类型系统帮你远离段错误。</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section">
+    <section class="section section-purple">
         <div class="container">
             <h2 data-i18n="build_title">用 Vix 构建应用</h2>
-            <p style="font-size: 1.1rem; max-width: 800px; margin: 0 auto 30px; text-align: center; color: var(--text-muted);" data-i18n="build_desc">
-                Vix 目前正在快速发展中，语法简洁、一致。
+            <div class="highlight-bar"></div>
+            <p class="build-intro" data-i18n="build_desc">
+                Vix 目前处于积极开发阶段（v0.2.1），核心语法和类型系统已经可用。以下是一些你可以尝试的方向，更多示例请参考官方仓库。
             </p>
-            
-            <div style="max-width: 700px; margin: 0 auto;">
-                <div class="code-sample">
-<pre><code><span class="code-comment">// A simple Vix program</span>
-<span class="code-keyword">fn</span> <span class="code-title">main</span>() -&gt; <span class="code-keyword">i32</span> {
-    <span class="code-keyword">let</span> message = <span class="code-string">"Hello, Vix Lang!"</span>;
-    print(message);
-    <span class="code-keyword">return</span> <span class="code-string">0</span>;
-}</code></pre>
+            <div class="build-grid">
+                <div class="build-card">
+                    <h3>算法与数据结构</h3>
+                    <p>用 Vix 的经典语法实现链表、树和排序算法，感受模式匹配带来的清晰逻辑表达。</p>
+                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary">浏览示例</a>
+                </div>
+                <div class="build-card">
+                    <h3>系统工具</h3>
+                    <p>编写文件处理器、文本分析器或小型 CLI 工具。Vix 的编译速度和高性能运行时让工具开发事半功倍。</p>
+                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary">浏览示例</a>
+                </div>
+                <div class="build-card">
+                    <h3>探索语言特性</h3>
+                    <p>从泛型到指针运算，从结构体到可选类型。示例代码覆盖了 Vix 当前支持的核心特性。</p>
+                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary">浏览示例</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 橙色加灰色组合背景区块 -->
-    <section class="section section-orange">
-        <div class="container" style="text-align: center;">
-            <h2 data-i18n="eco_title">加入生态系统</h2>
-            <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px;" data-i18n="eco_desc">
-                依靠 XPM 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。
+    <section class="section production">
+        <div class="container">
+            <h2>关于 Vix</h2>
+            <div class="highlight-bar"></div>
+            <p>
+                Vix 是一门仍在快速成长中的系统级编程语言。我们的目标不是成为另一个 C++，而是提供一条更简洁、更现代的路径去编写底层软件。<strong>每一次编译都是对正确性的检查，每一行代码都应该表达清晰的意图。</strong>
             </p>
-            <div class="hero-actions" style="justify-content: center;">
-                <a href="https://github.com/vixlang/Xpm" class="btn btn-secondary" data-i18n="eco_xpm">了解 XPM 包管理器</a>
-                <a href="/VixDocs/" class="btn btn-secondary" data-i18n="eco_doc">阅读文档</a>
+        </div>
+    </section>
+
+    <section class="section section-orange-bg">
+        <div class="container">
+            <h2 data-i18n="eco_title">加入社区</h2>
+            <div class="highlight-bar"></div>
+            <div class="community-grid">
+                <div class="community-card">
+                    <h3>阅读</h3>
+                    <p>查看在线文档和教程，快速掌握 Vix 的语法与特性。</p>
+                    <a href="/VixDocs/" class="btn btn-secondary">阅读文档</a>
+                </div>
+                <div class="community-card">
+                    <h3>讨论</h3>
+                    <p>加入我们的社区，与其他开发者交流经验、分享项目、解决问题。</p>
+                    <a href="#" class="btn btn-secondary">加入讨论</a>
+                </div>
+            </div>
+            <div class="community-full">
+                <h3>贡献代码</h3>
+                <p>Vix 是真正由社区驱动的项目。我们欢迎您的帮助，无论您是业余爱好者还是生产级用户，也不管您是初来乍到的新手还是经验丰富的专家。让我们一起把 Vix 变得更好！</p>
+                <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary">查看 GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section thanks">
+        <div class="container">
+            <h2>感谢</h2>
+            <div class="highlight-bar"></div>
+            <p style="font-size: 1.15rem; color: var(--text-muted); max-width: 800px; line-height: 1.7;">
+                如果没有个人、公司慷慨无私地奉献出时间、劳动和资源，Vix 将不会存在。我们非常感谢您的支持！
+            </p>
+            <div class="thanks-grid">
+                <div class="thanks-card">
+                    <h3>个人贡献者</h3>
+                    <p>Vix 是一个社区项目，非常感谢社区为它所做的贡献。</p>
+                    <a href="https://github.com/vixlang/Vix-lang/graphs/contributors" class="btn btn-secondary">查看贡献者</a>
+                </div>
+                <div class="thanks-card">
+                    <h3>GitHub 组织</h3>
+                    <p>访问 Vix 的 GitHub 组织，探索编译器、文档、工具链和生态项目。</p>
+                    <a href="https://github.com/vixlang" class="btn btn-secondary">访问组织</a>
+                </div>
             </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <p data-i18n="footer_txt">由 VIx Lang 贡献者维护 | MIT 协议</p>
-            <p>
-                <a href="https://github.com/vixlang">GitHub</a>
-                <a href="mailto:popolk1871@outlook.com">Contact Us</a>
-            </p>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>获得帮助</h4>
+                    <ul>
+                        <li><a href="/VixDocs/">文档</a></li>
+                        <li><a href="https://github.com/vixlang/Vix-docs">贡献者文档</a></li>
+                        <li><a href="#">在用户论坛提问</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>条款与政策</h4>
+                    <ul>
+                        <li><a href="#">行为准则</a></li>
+                        <li><a href="#">许可证</a></li>
+                        <li><a href="#">安全问题公示</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>社交</h4>
+                    <div class="social-row">
+                        <a href="https://github.com/vixlang" target="_blank">GitHub</a>
+                        <a href="mailto:popolk1871@outlook.com">Contact Us</a>
+                    </div>
+                    <p style="margin-top: 12px; color: var(--text-muted); font-size: 0.9rem;">QQ 群: 130577506</p>
+                </div>
+            </div>
+            <div class="attribution">
+                <p>由 Vix Lang 贡献者维护 | MIT 协议</p>
+                <p>发现了错别字？<a href="https://github.com/vixlang/vixlang.github.io/issues">在这里提交修复！</a></p>
+            </div>
         </div>
     </footer>
 
@@ -221,33 +603,27 @@
         const translations = {
             zh: {
                 nav_doc: "文档", nav_learn: "LearnVix",
-                title: "VIx Lang",
-                desc: "一门赋予每个人构建底层、可靠且高效软件能力的语言。",
+                title: "Vix",
+                desc: "赋予每个人构建简洁、可靠且高效系统软件的能力。",
                 start: "马上开始", src: "查看源码",
-                why_title: "为什么选择 VIx?",
-                f1_t: "高性能", f1_d: "由于基于 LLVM 后端，Vix 速度惊人且内存利用率极高。它可以胜任对性能要求极高的服务，甚至可以直接在嵌入式设备上运行。",
-                f2_t: "现代类型系统", f2_d: "丰富的类型系统支持泛型与代数数据类型（ADT）。内置现代语言级别的 match 模式匹配体系以及结构体等，使得代码极具表现力。",
-                f3_t: "底层控制力", f3_d: "无缝支持指针运算和原生内存操作。使用 & 取地址，@ 解引用，在提供高级语法抽象的同时，毫不妥协对硬件的绝对掌控。",
-                build_title: "用 VIx 构建应用", build_desc: "VIx 目前正在快速发展中，语法简洁、一致。",
-                code_comment: "// [在此处插入实际的 Vix 代码示例]",
-                eco_title: "加入生态系统", eco_desc: "依靠 XPM 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。",
-                eco_xpm: "了解 XPM 包管理器", eco_doc: "阅读文档",
-                footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议"
+                why_title: "为什么选择 Vix?",
+                f1_t: "编译即优化", f1_d: "基于 LLVM 后端，Vix 在编译期完成大量优化。没有沉重的运行时负担，生成的二进制文件精简高效，启动速度毫秒级。",
+                f2_t: "模式匹配与 ADT", f2_d: "原生支持代数数据类型和强大的 match 表达式，让状态处理变得直观且穷尽。编译器会提醒你漏掉的每一种情况，而不是在运行时崩溃。",
+                f3_t: "可控的底层能力", f3_d: "需要操作原始内存？Vix 提供指针运算和手动内存管理的能力。不需要时，现代化的语法和类型系统帮你远离段错误。",
+                build_title: "用 Vix 构建应用", build_desc: "Vix 目前处于积极开发阶段（v0.2.1），核心语法和类型系统已经可用。以下是一些你可以尝试的方向，更多示例请参考官方仓库。",
+                eco_title: "加入社区"
             },
             en: {
                 nav_doc: "Docs", nav_learn: "LearnVix",
-                title: "VIx Lang",
-                desc: "A language empowering everyone to build low-level, reliable, and efficient software.",
+                title: "Vix",
+                desc: "A language empowering everyone to build simple, reliable, and efficient systems software.",
                 start: "Get Started", src: "View Source",
-                why_title: "Why VIx?",
-                f1_t: "High Performance", f1_d: "Based on the LLVM backend, Vix is blazingly fast and highly memory-efficient. It handles performance-critical services and runs directly on embedded devices.",
-                f2_t: "Modern Type System", f2_d: "Rich type system supporting generics and ADTs. Built-in modern pattern matching and structs make code highly expressive.",
-                f3_t: "Low-level Control", f3_d: "Seamless support for pointer arithmetic and raw memory manipulation. High-level abstractions without compromising hardware control.",
-                build_title: "Build with VIx", build_desc: "VIx is evolving rapidly with clean and consistent syntax.",
-                code_comment: "// [Insert your VIx code example here]",
-                eco_title: "Join the Ecosystem", eco_desc: "With the XPM package manager, dependency resolution, compilation, and distribution become incredibly simple.",
-                eco_xpm: "Discover XPM", eco_doc: "Read the Docs",
-                footer_txt: "Maintained by VIx Lang Contributors | MIT License"
+                why_title: "Why Vix?",
+                f1_t: "Optimized at Compile Time", f1_d: "Powered by the LLVM backend, Vix performs heavy optimizations at compile time. No heavy runtime overhead, lean binaries, and millisecond startup.",
+                f2_t: "Pattern Matching & ADTs", f2_d: "First-class algebraic data types and expressive match statements make state handling intuitive and exhaustive. The compiler catches missing cases, not runtime crashes.",
+                f3_t: "Controllable Low-level Power", f3_d: "Need raw memory? Vix gives you pointer arithmetic and manual memory management. When you don't need it, modern syntax and the type system keep segfaults away.",
+                build_title: "Build with Vix", build_desc: "Vix is under active development (v0.2.1). Core syntax and the type system are already usable. Here are some directions to explore, and more examples are in the official repository.",
+                eco_title: "Join the Community"
             }
         };
 
