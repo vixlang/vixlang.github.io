@@ -407,7 +407,7 @@
                 <ul class="nav-links">
                     <li><a href="/VixDocs/" data-i18n="nav_doc">文档</a></li>
                     <li><a href="https://github.com/vixlang/VixDocs" data-i18n="nav_learn">LearnVix</a></li>
-                    <li><a href="https://github.com/vixlang/Very">XPM</a></li>
+                    <li><a href="https://github.com/vixlang/Xpm">XPM</a></li>
                     <li><a href="https://github.com/vixlang/Vix-lang">GitHub</a></li>
                 </ul>
                 <div class="lang-switch">
@@ -508,58 +508,16 @@
         </div>
     </section>
 
-    <section class="section production">
-        <div class="container">
-            <h2>关于 Vix</h2>
-            <div class="highlight-bar"></div>
-            <p>
-                Vix 是一门仍在快速成长中的系统级编程语言。我们的目标不是成为另一个 C++，而是提供一条更简洁、更现代的路径去编写底层软件。<strong>每一次编译都是对正确性的检查，每一行代码都应该表达清晰的意图。</strong>
+    <!-- 橙色加灰色组合背景区块 -->
+    <section class="section section-orange">
+        <div class="container" style="text-align: center;">
+            <h2 data-i18n="eco_title">加入生态系统</h2>
+            <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px;" data-i18n="eco_desc">
+                依靠 XPM 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。
             </p>
-        </div>
-    </section>
-
-    <section class="section section-orange-bg">
-        <div class="container">
-            <h2 data-i18n="eco_title">加入社区</h2>
-            <div class="highlight-bar"></div>
-            <div class="community-grid">
-                <div class="community-card">
-                    <h3>阅读</h3>
-                    <p>查看在线文档和教程，快速掌握 Vix 的语法与特性。</p>
-                    <a href="/VixDocs/" class="btn btn-secondary">阅读文档</a>
-                </div>
-                <div class="community-card">
-                    <h3>讨论</h3>
-                    <p>加入我们的社区，与其他开发者交流经验、分享项目、解决问题。</p>
-                    <a href="#" class="btn btn-secondary">加入讨论</a>
-                </div>
-            </div>
-            <div class="community-full">
-                <h3>贡献代码</h3>
-                <p>Vix 是真正由社区驱动的项目。我们欢迎您的帮助，无论您是业余爱好者还是生产级用户，也不管您是初来乍到的新手还是经验丰富的专家。让我们一起把 Vix 变得更好！</p>
-                <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary">查看 GitHub</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="section thanks">
-        <div class="container">
-            <h2>感谢</h2>
-            <div class="highlight-bar"></div>
-            <p style="font-size: 1.15rem; color: var(--text-muted); max-width: 800px; line-height: 1.7;">
-                如果没有个人、公司慷慨无私地奉献出时间、劳动和资源，Vix 将不会存在。我们非常感谢您的支持！
-            </p>
-            <div class="thanks-grid">
-                <div class="thanks-card">
-                    <h3>个人贡献者</h3>
-                    <p>Vix 是一个社区项目，非常感谢社区为它所做的贡献。</p>
-                    <a href="https://github.com/vixlang/Vix-lang/graphs/contributors" class="btn btn-secondary">查看贡献者</a>
-                </div>
-                <div class="thanks-card">
-                    <h3>GitHub 组织</h3>
-                    <p>访问 Vix 的 GitHub 组织，探索编译器、文档、工具链和生态项目。</p>
-                    <a href="https://github.com/vixlang" class="btn btn-secondary">访问组织</a>
-                </div>
+            <div class="hero-actions" style="justify-content: center;">
+                <a href="https://github.com/vixlang/Xpm" class="btn btn-secondary" data-i18n="eco_xpm">了解 XPM 包管理器</a>
+                <a href="/VixDocs/" class="btn btn-secondary" data-i18n="eco_doc">阅读文档</a>
             </div>
         </div>
     </section>
@@ -606,24 +564,30 @@
                 title: "Vix",
                 desc: "赋予每个人构建简洁、可靠且高效系统软件的能力。",
                 start: "马上开始", src: "查看源码",
-                why_title: "为什么选择 Vix?",
-                f1_t: "编译即优化", f1_d: "基于 LLVM 后端，Vix 在编译期完成大量优化。没有沉重的运行时负担，生成的二进制文件精简高效，启动速度毫秒级。",
-                f2_t: "模式匹配与 ADT", f2_d: "原生支持代数数据类型和强大的 match 表达式，让状态处理变得直观且穷尽。编译器会提醒你漏掉的每一种情况，而不是在运行时崩溃。",
-                f3_t: "可控的底层能力", f3_d: "需要操作原始内存？Vix 提供指针运算和手动内存管理的能力。不需要时，现代化的语法和类型系统帮你远离段错误。",
-                build_title: "用 Vix 构建应用", build_desc: "Vix 目前处于积极开发阶段（v0.2.1），核心语法和类型系统已经可用。以下是一些你可以尝试的方向，更多示例请参考官方仓库。",
-                eco_title: "加入社区"
+                why_title: "为什么选择 VIx?",
+                f1_t: "高性能", f1_d: "由于基于 LLVM 后端，Vix 速度惊人且内存利用率极高。它可以胜任对性能要求极高的服务，甚至可以直接在嵌入式设备上运行。",
+                f2_t: "现代类型系统", f2_d: "丰富的类型系统支持泛型与代数数据类型（ADT）。内置现代语言级别的 match 模式匹配体系以及结构体等，使得代码极具表现力。",
+                f3_t: "底层控制力", f3_d: "无缝支持指针运算和原生内存操作。使用 & 取地址，@ 解引用，在提供高级语法抽象的同时，毫不妥协对硬件的绝对掌控。",
+                build_title: "用 VIx 构建应用", build_desc: "VIx 目前正在快速发展中，语法简洁、一致。",
+                code_comment: "// [在此处插入实际的 Vix 代码示例]",
+                eco_title: "加入生态系统", eco_desc: "依靠 XPM 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。",
+                eco_xpm: "了解 XPM 包管理器", eco_doc: "阅读文档",
+                footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议"
             },
             en: {
                 nav_doc: "Docs", nav_learn: "LearnVix",
                 title: "Vix",
                 desc: "A language empowering everyone to build simple, reliable, and efficient systems software.",
                 start: "Get Started", src: "View Source",
-                why_title: "Why Vix?",
-                f1_t: "Optimized at Compile Time", f1_d: "Powered by the LLVM backend, Vix performs heavy optimizations at compile time. No heavy runtime overhead, lean binaries, and millisecond startup.",
-                f2_t: "Pattern Matching & ADTs", f2_d: "First-class algebraic data types and expressive match statements make state handling intuitive and exhaustive. The compiler catches missing cases, not runtime crashes.",
-                f3_t: "Controllable Low-level Power", f3_d: "Need raw memory? Vix gives you pointer arithmetic and manual memory management. When you don't need it, modern syntax and the type system keep segfaults away.",
-                build_title: "Build with Vix", build_desc: "Vix is under active development (v0.2.1). Core syntax and the type system are already usable. Here are some directions to explore, and more examples are in the official repository.",
-                eco_title: "Join the Community"
+                why_title: "Why VIx?",
+                f1_t: "High Performance", f1_d: "Based on the LLVM backend, Vix is blazingly fast and highly memory-efficient. It handles performance-critical services and runs directly on embedded devices.",
+                f2_t: "Modern Type System", f2_d: "Rich type system supporting generics and ADTs. Built-in modern pattern matching and structs make code highly expressive.",
+                f3_t: "Low-level Control", f3_d: "Seamless support for pointer arithmetic and raw memory manipulation. High-level abstractions without compromising hardware control.",
+                build_title: "Build with VIx", build_desc: "VIx is evolving rapidly with clean and consistent syntax.",
+                code_comment: "// [Insert your VIx code example here]",
+                eco_title: "Join the Ecosystem", eco_desc: "With the XPM package manager, dependency resolution, compilation, and distribution become incredibly simple.",
+                eco_xpm: "Discover XPM", eco_doc: "Read the Docs",
+                footer_txt: "Maintained by VIx Lang Contributors | MIT License"
             }
         };
 
