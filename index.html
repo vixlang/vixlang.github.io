@@ -7,6 +7,13 @@
     <meta name="description" content="一门静态类型、编译型语言。使用 LLVM 后端，支持泛型、ADT、模式匹配、指针运算。">
 
     <style>
+        @font-face {
+            font-family: "Iosevka";
+            src: url("./iosevka-bold-1.ttf") format("truetype");
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
         :root {
             --bg: #353b45;
             --bg-alt: #3e4652;
@@ -149,18 +156,28 @@
             background: var(--gray-dark);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 20px;
+            padding: 28px 32px;
             overflow-x: auto;
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-            font-size: 0.9rem;
-            line-height: 1.55;
+            display: inline-block;
+            min-width: 100%;
+            box-sizing: border-box;
+            font-family: "Iosevka", Consolas, monospace;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.4;
             text-align: left;
         }
-        .code-sample pre { margin: 0; color: #e6edf3; }
-        .code-keyword { color: #ff7b72; }
-        .code-title { color: #d2a8ff; }
-        .code-string { color: #a5d6ff; }
-        .code-comment { color: #8b949e; }
+        .code-sample code { font-family: "Iosevka", Consolas, monospace; font-weight: 500; letter-spacing: 0.03em; }
+        .code-sample pre { margin: 0; color: #abb2bf; }
+        .code-keyword { color: #c678dd; }
+        .code-title { color: #61afef; }
+        .code-string { color: #98c379; }
+        .code-number { color: #d19a66; }
+        .code-param { color: #e06c75; }
+        .code-type { color: #e5c07b; }
+        .code-property { color: #56b6c2; }
+        .code-operator { color: #abb2bf; }
+        .code-comment { color: #5c6370; font-style: italic; }
 
         /* Sections */
         .section { padding: 70px 0; }
@@ -431,28 +448,28 @@
                 </div>
                 <div class="hero-code">
                     <div class="code-sample">
-<pre><code><span class="code-keyword">fn</span> <span class="code-title">find</span>(arr: [i32], target: i32): ?i32 {
-    <span class="code-keyword">for</span> (i <span class="code-keyword">in</span> 0 .. arr.length) {
-        <span class="code-keyword">if</span> (arr[i] == target) {
-            <span class="code-keyword">return</span> <span class="code-title">Some</span>(i)
+<pre><code><span class="code-keyword">fn</span> <span class="code-title">find</span>(<span class="code-param">arr</span>: <span class="code-type">[i32]</span>, <span class="code-param">target</span>: <span class="code-type">i32</span>): <span class="code-type">?i32</span> {
+    <span class="code-keyword">for</span> (<span class="code-param">i</span> <span class="code-keyword">in</span> <span class="code-number">0</span> .. <span class="code-param">arr</span>.<span class="code-property">length</span>) {
+        <span class="code-keyword">if</span> (<span class="code-param">arr</span>[<span class="code-param">i</span>] == <span class="code-param">target</span>) {
+            <span class="code-keyword">return</span> <span class="code-title">Some</span>(<span class="code-param">i</span>)
         }
     }
     <span class="code-keyword">return</span> <span class="code-title">None</span>
 }
 
-<span class="code-keyword">fn</span> <span class="code-title">main</span>(): i32 {
-    <span class="code-keyword">let</span> arr = [10, 20, 30, 40, 50]
+<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
+    <span class="code-keyword">let</span> <span class="code-param">arr</span> = [<span class="code-number">10</span>, <span class="code-number">20</span>, <span class="code-number">30</span>, <span class="code-number">40</span>, <span class="code-number">50</span>]
 
-    <span class="code-keyword">match</span> find(arr, 30) {
-        <span class="code-title">Some</span>(idx) -&gt; print(<span class="code-string">"Found at index: "</span>, idx)
+    <span class="code-keyword">match</span> find(<span class="code-param">arr</span>, <span class="code-number">30</span>) {
+        <span class="code-title">Some</span>(<span class="code-param">idx</span>) -&gt; print(<span class="code-string">"Found at index: "</span>, <span class="code-param">idx</span>)
         <span class="code-title">None</span>      -&gt; print(<span class="code-string">"Not found"</span>)
     }
 
-    <span class="code-keyword">match</span> find(arr, 99) {
-        <span class="code-title">Some</span>(idx) -&gt; print(<span class="code-string">"Found at index: "</span>, idx)
+    <span class="code-keyword">match</span> find(<span class="code-param">arr</span>, <span class="code-number">99</span>) {
+        <span class="code-title">Some</span>(<span class="code-param">idx</span>) -&gt; print(<span class="code-string">"Found at index: "</span>, <span class="code-param">idx</span>)
         <span class="code-title">None</span>      -&gt; print(<span class="code-string">"Not found"</span>)
     }
-    <span class="code-keyword">return</span> 0
+    <span class="code-keyword">return</span> <span class="code-number">0</span>
 }</code></pre>
                     </div>
                 </div>
@@ -516,7 +533,7 @@
                 依靠 Very 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。
             </p>
             <div class="hero-actions" style="justify-content: center;">
-                <a href="https://github.com/vixlang/Very" class="btn btn-secondary" data-i18n="eco_xpm">了解 XPM 包管理器</a>
+                <a href="https://github.com/vixlang/Very" class="btn btn-secondary" data-i18n="eco_xpm">了解 Very 包管理器</a>
                 <a href="/VixDocs/" class="btn btn-secondary" data-i18n="eco_doc">阅读文档</a>
             </div>
         </div>
@@ -570,8 +587,8 @@
                 f3_t: "底层控制力", f3_d: "无缝支持指针运算和原生内存操作。使用 & 取地址，@ 解引用，在提供高级语法抽象的同时，毫不妥协对硬件的绝对掌控。",
                 build_title: "用 VIx 构建应用", build_desc: "VIx 目前正在快速发展中，语法简洁、一致。",
                 code_comment: "// [在此处插入实际的 Vix 代码示例]",
-                eco_title: "加入生态系统", eco_desc: "依靠 XPM 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。",
-                eco_xpm: "了解 XPM 包管理器", eco_doc: "阅读文档",
+                eco_title: "加入生态系统", eco_desc: "依靠 Very 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。",
+                eco_xpm: "了解 Very 包管理器", eco_doc: "阅读文档",
                 footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议"
             },
             en: {
@@ -585,8 +602,8 @@
                 f3_t: "Low-level Control", f3_d: "Seamless support for pointer arithmetic and raw memory manipulation. High-level abstractions without compromising hardware control.",
                 build_title: "Build with VIx", build_desc: "VIx is evolving rapidly with clean and consistent syntax.",
                 code_comment: "// [Insert your VIx code example here]",
-                eco_title: "Join the Ecosystem", eco_desc: "With the XPM package manager, dependency resolution, compilation, and distribution become incredibly simple.",
-                eco_xpm: "Discover XPM", eco_doc: "Read the Docs",
+                eco_title: "Join the Ecosystem", eco_desc: "With the Very package manager, dependency resolution, compilation, and distribution become incredibly simple.",
+                eco_xpm: "Discover Very", eco_doc: "Read the Docs",
                 footer_txt: "Maintained by VIx Lang Contributors | MIT License"
             }
         };
