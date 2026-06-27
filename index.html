@@ -525,16 +525,30 @@
         </div>
     </section>
 
-    <!-- 橙色加灰色组合背景区块 -->
-    <section class="section section-orange">
-        <div class="container" style="text-align: center;">
+    <!-- 生态系统 -->
+    <section class="section section-purple">
+        <div class="container">
             <h2 data-i18n="eco_title">加入生态系统</h2>
-            <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px;" data-i18n="eco_desc">
-                依靠 Very 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。
+            <div class="highlight-bar"></div>
+            <p class="build-intro" data-i18n="eco_desc">
+                依靠 Very 包管理器、Verve 格式化工具和 VS Code 扩展，Vix 拥有日渐完善的工具链。
             </p>
-            <div class="hero-actions" style="justify-content: center;">
-                <a href="very.html" class="btn btn-secondary" data-i18n="eco_xpm">了解 Very 包管理器</a>
-                <a href="/VixDocs/" class="btn btn-secondary" data-i18n="eco_doc">阅读文档</a>
+            <div class="build-grid">
+                <div class="build-card">
+                    <h3>VS Code 扩展</h3>
+                    <p>为 VS Code 提供语法高亮、代码补全、错误检查等语言支持，让 Vix 开发体验更顺畅。</p>
+                    <a href="https://github.com/vixlang/ext-VixLangAnalyzer" class="btn btn-secondary" target="_blank">安装扩展</a>
+                </div>
+                <div class="build-card">
+                    <h3>Verve</h3>
+                    <p>Vix 代码格式化工具，统一团队代码风格。支持一键格式化，可与编辑器深度集成。使用 very build 构建。</p>
+                    <a href="https://github.com/vixlang/vtool-Verve" class="btn btn-secondary" target="_blank">了解 Verve</a>
+                </div>
+                <div class="build-card">
+                    <h3>Very</h3>
+                    <p>Vix 语言包管理器兼项目管理工具。依赖解决、编译与分发一体，快速创建和管理 Vix 项目。</p>
+                    <a href="very.html" class="btn btn-secondary" data-i18n="eco_xpm">了解 Very</a>
+                </div>
             </div>
         </div>
     </section>
@@ -587,8 +601,8 @@
                 f3_t: "底层控制力", f3_d: "无缝支持指针运算和原生内存操作。使用 & 取地址，@ 解引用，在提供高级语法抽象的同时，毫不妥协对硬件的绝对掌控。",
                 build_title: "用 VIx 构建应用", build_desc: "VIx 目前正在快速发展中，语法简洁、一致。",
                 code_comment: "// [在此处插入实际的 Vix 代码示例]",
-                eco_title: "加入生态系统", eco_desc: "依靠 Very 包管理器，项目的依赖解决、编译与分发变得异常简单。我们欢迎您对生态和编译器的贡献。",
-                eco_xpm: "了解 Very 包管理器", eco_doc: "阅读文档",
+                eco_title: "加入生态系统", eco_desc: "依靠 Very 包管理器、Verve 格式化工具和 VS Code 扩展，Vix 拥有日渐完善的工具链。",
+                eco_xpm: "了解 Very", eco_doc: "阅读文档",
                 footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议"
             },
             en: {
@@ -602,7 +616,7 @@
                 f3_t: "Low-level Control", f3_d: "Seamless support for pointer arithmetic and raw memory manipulation. High-level abstractions without compromising hardware control.",
                 build_title: "Build with VIx", build_desc: "VIx is evolving rapidly with clean and consistent syntax.",
                 code_comment: "// [Insert your VIx code example here]",
-                eco_title: "Join the Ecosystem", eco_desc: "With the Very package manager, dependency resolution, compilation, and distribution become incredibly simple.",
+                eco_title: "Join the Ecosystem", eco_desc: "Vix is growing with a powerful toolchain: the Very package manager, Verve formatter, and VS Code extension.",
                 eco_xpm: "Discover Very", eco_doc: "Read the Docs",
                 footer_txt: "Maintained by VIx Lang Contributors | MIT License"
             }
