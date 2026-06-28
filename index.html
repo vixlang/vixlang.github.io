@@ -1,435 +1,35 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <title>Vix Lang</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="description" content="一门静态类型、编译型语言。使用 LLVM 后端，支持泛型、ADT、模式匹配、指针运算。">
-
-    <style>
-        @font-face {
-            font-family: "Iosevka";
-            src: url("./iosevka-bold-1.ttf") format("truetype");
-            font-weight: 700;
-            font-style: normal;
-            font-display: swap;
-        }
-        :root {
-            --bg: #353b45;
-            --bg-alt: #3e4652;
-            --text-main: #f5f5f5;
-            --text-muted: #cccccc;
-            --border: #5c6678;
-            --orange: #e67e22;
-            --orange-hover: #d35400;
-            --orange-light: #ffd6c2;
-            --gray-dark: #282c33;
-            --link: #e67e22;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text-main);
-            background: var(--bg);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        a { color: var(--link); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-
-        /* Nav */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            min-height: 70px;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: bold;
-            font-size: 1.6rem;
-            color: var(--text-main);
-            text-decoration: none;
-            margin-left: -16px;
-        }
-        .brand img { height: 64px; }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 28px;
-        }
-        .nav-links {
-            display: flex;
-            gap: 24px;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        .nav-links a {
-            color: var(--text-main);
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-        .nav-links a:hover { color: var(--orange); text-decoration: none; }
-
-        .lang-switch {
-            display: flex;
-            gap: 10px;
-            background: var(--gray-dark);
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            font-weight: bold;
-        }
-        .lang-switch a { cursor: pointer; color: var(--text-muted); }
-        .lang-switch a:hover, .lang-switch a.active { color: var(--orange); text-decoration: none; }
-
-        /* Hero */
-        .hero {
-            padding: 50px 0 80px;
-        }
-        .hero-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 50px;
-        }
-        .hero-main { flex: 1.2; padding-left: 60px; }
-        .hero-code { flex: 1; min-width: 0; margin-left: -20px; }
-
-        .hero h1 {
-            font-size: 7rem;
-            margin: 0 0 16px 0;
-            letter-spacing: -0.05em;
-            font-weight: 900;
-            color: var(--orange);
-        }
-        .hero h2 {
-            font-size: 1.6rem;
-            font-weight: 400;
-            color: var(--text-muted);
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        .hero-actions {
-            display: flex;
-            gap: 16px;
-            margin-top: 32px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            display: inline-block;
-            padding: 14px 28px;
-            font-size: 1.05rem;
-            font-weight: bold;
-            border-radius: 6px;
-            text-decoration: none !important;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        .btn-primary {
-            background: var(--orange);
-            color: #fff;
-            border: 2px solid var(--orange);
-        }
-        .btn-primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); }
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-main);
-            border: 2px solid var(--border);
-        }
-        .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
-
-        .code-sample {
-            background: var(--gray-dark);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 28px 32px;
-            overflow-x: auto;
-            display: inline-block;
-            min-width: 100%;
-            box-sizing: border-box;
-            font-family: "Iosevka", Consolas, monospace;
-            font-weight: 500;
-            font-size: 1rem;
-            line-height: 1.4;
-            text-align: left;
-        }
-        .code-sample code { font-family: "Iosevka", Consolas, monospace; font-weight: 500; letter-spacing: 0.03em; }
-        .code-sample pre { margin: 0; color: #abb2bf; }
-        .code-keyword { color: #c678dd; }
-        .code-title { color: #61afef; }
-        .code-string { color: #98c379; }
-        .code-number { color: #d19a66; }
-        .code-param { color: #e06c75; }
-        .code-type { color: #e5c07b; }
-        .code-property { color: #56b6c2; }
-        .code-operator { color: #abb2bf; }
-        .code-comment { color: #5c6370; font-style: italic; }
-
-        /* Sections */
-        .section { padding: 70px 0; }
-        .section-green { background: #2d3a2d; }
-        .section-purple { background: #3a2d3a; }
-        .section-orange-bg { background: var(--orange); color: #fff; }
-        .section-orange-bg h2,
-        .section-orange-bg h3 { color: #fff; }
-        .section-orange-bg p { color: var(--orange-light); }
-        .section-orange-bg a { color: #fff; text-decoration: underline; }
-
-        .section h2 {
-            font-size: 2.2rem;
-            margin-top: 0;
-            margin-bottom: 12px;
-            letter-spacing: -0.02em;
-            color: var(--text-main);
-        }
-        .highlight-bar {
-            width: 60px;
-            height: 4px;
-            background: var(--orange);
-            margin-bottom: 40px;
-        }
-        .section-orange-bg .highlight-bar { background: #fff; }
-
-        /* Why */
-        .why-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 32px;
-        }
-        .why-card h3 {
-            font-size: 1.4rem;
-            margin: 0 0 12px 0;
-            color: var(--orange);
-        }
-        .why-card p {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 1.05rem;
-            line-height: 1.6;
-        }
-
-        /* Build */
-        .build-intro {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 800px;
-            margin-bottom: 30px;
-        }
-        .build-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 24px;
-        }
-        .build-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .build-card h3 {
-            font-size: 1.2rem;
-            margin: 0;
-            color: var(--orange);
-        }
-        .build-card p {
-            flex-grow: 1;
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-        .build-card .btn-secondary {
-            margin-top: auto;
-            align-self: flex-start;
-            font-size: 0.95rem;
-            padding: 10px 20px;
-        }
-
-        /* Production */
-        .production { background: var(--bg-alt); }
-        .production p {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            line-height: 1.7;
-            max-width: 900px;
-        }
-
-        /* Community */
-        .community-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 32px;
-            margin-bottom: 40px;
-        }
-        .community-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .community-card h3 {
-            font-size: 1.4rem;
-            margin: 0;
-            color: #fff;
-        }
-        .community-card p {
-            flex-grow: 1;
-            margin: 0;
-            color: var(--orange-light);
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-        .community-card .btn-secondary {
-            margin-top: auto;
-            align-self: flex-start;
-            border-color: rgba(255,255,255,0.4);
-            color: #fff;
-            font-size: 0.95rem;
-            padding: 10px 20px;
-        }
-        .community-card .btn-secondary:hover {
-            background: #fff;
-            color: var(--orange);
-            border-color: #fff;
-        }
-        .community-full {
-            margin-top: 20px;
-        }
-        .community-full h3 {
-            font-size: 1.4rem;
-            margin: 0 0 12px 0;
-            color: #fff;
-        }
-        .community-full p {
-            color: var(--orange-light);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin: 0 0 20px 0;
-        }
-
-        /* Thanks */
-        .thanks { background: var(--bg-alt); }
-        .thanks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 32px;
-            margin-top: 40px;
-        }
-        .thanks-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .thanks-card h3 {
-            font-size: 1.3rem;
-            margin: 0;
-            color: var(--orange);
-        }
-        .thanks-card p {
-            flex-grow: 1;
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-        .thanks-card .btn-secondary {
-            margin-top: auto;
-            align-self: flex-start;
-            font-size: 0.95rem;
-            padding: 10px 20px;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--gray-dark);
-            padding: 60px 0 30px;
-        }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        .footer-col h4 {
-            font-size: 1.1rem;
-            margin: 0 0 16px 0;
-            color: var(--text-main);
-        }
-        .footer-col ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        .footer-col li { margin-bottom: 10px; }
-        .footer-col a {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-        .footer-col a:hover { color: var(--orange); text-decoration: none; }
-        .social-row {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .social-row a {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-        .social-row a:hover { color: var(--orange); }
-
-        .attribution {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            padding-top: 30px;
-            border-top: 1px solid var(--border);
-        }
-        .attribution p { margin: 6px 0; }
-        .attribution a { color: var(--text-muted); }
-
-        @media (max-width: 768px) {
-            .hero-inner { flex-direction: column; text-align: center; }
-            .hero-main { padding-left: 0; }
-            .hero h1 { font-size: 5rem; }
-            .hero h2 { font-size: 1.3rem; }
-            .hero-actions { justify-content: center; }
-            .hero-code { width: 100%; text-align: left; margin-left: 0; }
-            .nav-right { flex-direction: column; gap: 10px; align-items: flex-end; }
-            .nav-links { gap: 12px; font-size: 0.85rem; }
-            .why-grid, .build-grid, .community-grid, .thanks-grid, .footer-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/site.css">
+    <script src="assets/site.js" defer></script>
 </head>
 <body>
+    <div id="progress-bar"></div>
     <div class="container">
         <nav>
-            <a href="#" class="brand">
+            <a href="index.html" class="brand">
                 <img src="logo.png" alt="Vix Lang Logo">
-                <span>Vix</span>
             </a>
-            <div class="nav-right">
+            <button class="nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-nav-links">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-right" id="site-nav-links">
                 <ul class="nav-links">
+                    <li><a href="index.html" class="active" data-i18n="nav_home">首页</a></li>
                     <li><a href="/VixDocs/" data-i18n="nav_doc">文档</a></li>
-                    <li><a href="https://github.com/vixlang/VixDocs" data-i18n="nav_learn">LearnVix</a></li>
                     <li><a href="very.html">Very</a></li>
                     <li><a href="https://github.com/vixlang/Vix-lang">GitHub</a></li>
                 </ul>
                 <div class="lang-switch">
-                    <a id="btn-zh" onclick="setLang('zh')" class="active">中文</a>
-                    <a id="btn-en" onclick="setLang('en')">EN</a>
+                    <button id="btn-zh" type="button" data-lang="zh" class="active" aria-pressed="true">中文</button>
+                    <button id="btn-en" type="button" data-lang="en" aria-pressed="false">EN</button>
                 </div>
             </div>
         </nav>
@@ -439,14 +39,14 @@
         <header class="hero">
             <div class="hero-inner">
                 <div class="hero-main">
-                    <h1 data-i18n="title">Vix</h1>
-                    <h2 data-i18n="desc">赋予每个人构建简洁、<br class="dn db-ns">可靠且高效系统软件的能力。</h2>
-                    <div class="hero-actions">
+                    <h1 data-i18n="title" class="hero-line hero-line-1">Vix</h1>
+                    <h2 data-i18n="desc" class="hero-line hero-line-2">赋予每个人构建简洁、<br class="dn db-ns">可靠且高效系统软件的能力。</h2>
+                    <div class="hero-actions hero-line hero-line-3">
                         <a href="https://github.com/vixlang/Vix-lang/releases" class="btn btn-primary" data-i18n="start">马上开始</a>
                         <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary" data-i18n="src">查看源码</a>
                     </div>
                 </div>
-                <div class="hero-code">
+                <div class="hero-code hero-line hero-line-4">
                     <div class="code-sample">
 <pre><code><span class="code-keyword">fn</span> <span class="code-title">find</span>(<span class="code-param">arr</span>: <span class="code-type">[i32]</span>, <span class="code-param">target</span>: <span class="code-type">i32</span>): <span class="code-type">?i32</span> {
     <span class="code-keyword">for</span> (<span class="code-param">i</span> <span class="code-keyword">in</span> <span class="code-number">0</span> .. <span class="code-param">arr</span>.<span class="code-property">length</span>) {
@@ -477,11 +77,11 @@
         </header>
     </div>
 
-    <section class="section section-green">
+    <section class="section section-green reveal">
         <div class="container">
             <h2 data-i18n="why_title">为什么选择 Vix?</h2>
             <div class="highlight-bar"></div>
-            <div class="why-grid">
+            <div class="why-grid reveal-grid">
                 <div class="why-card">
                     <h3 data-i18n="f1_t">编译即优化</h3>
                     <p data-i18n="f1_d">基于 LLVM 后端，Vix 在编译期完成大量优化。没有沉重的运行时负担，生成的二进制文件精简高效，启动速度毫秒级。</p>
@@ -498,14 +98,14 @@
         </div>
     </section>
 
-    <section class="section section-purple">
+    <section class="section section-purple reveal">
         <div class="container">
             <h2 data-i18n="build_title">用 Vix 构建应用</h2>
             <div class="highlight-bar"></div>
             <p class="build-intro" data-i18n="build_desc">
                 Vix 目前处于积极开发阶段（v0.3.3），核心语法和类型系统已经可用。以下是一些你可以尝试的方向，更多示例请参考官方仓库。
             </p>
-            <div class="build-grid">
+            <div class="build-grid reveal-grid">
                 <div class="build-card">
                     <h3>算法与数据结构</h3>
                     <p>用 Vix 的经典语法实现链表、树和排序算法，感受模式匹配带来的清晰逻辑表达。</p>
@@ -526,14 +126,14 @@
     </section>
 
     <!-- 生态系统 -->
-    <section class="section section-purple">
+    <section class="section section-purple reveal">
         <div class="container">
             <h2 data-i18n="eco_title">加入生态系统</h2>
             <div class="highlight-bar"></div>
             <p class="build-intro" data-i18n="eco_desc">
                 依靠 Very 包管理器、Verve 格式化工具和 VS Code 扩展，Vix 拥有日渐完善的工具链。
             </p>
-            <div class="build-grid">
+            <div class="build-grid reveal-grid">
                 <div class="build-card">
                     <h3>VS Code 扩展</h3>
                     <p>为 VS Code 提供语法高亮、代码补全、错误检查等语言支持，让 Vix 开发体验更顺畅。</p>
@@ -553,7 +153,7 @@
         </div>
     </section>
 
-    <footer>
+    <footer class="reveal">
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
@@ -578,7 +178,7 @@
                         <a href="https://github.com/vixlang" target="_blank">GitHub</a>
                         <a href="mailto:popolk1871@outlook.com">Contact Us</a>
                     </div>
-                    <p style="margin-top: 12px; color: var(--text-muted); font-size: 0.9rem;">QQ 群: 130577506</p>
+                    <p class="footer-note">QQ 群: 130577506</p>
                 </div>
             </div>
             <div class="attribution">
@@ -591,7 +191,7 @@
     <script>
         const translations = {
             zh: {
-                nav_doc: "文档", nav_learn: "LearnVix",
+                nav_home: "首页", nav_doc: "文档",
                 title: "Vix",
                 desc: "赋予每个人构建简洁、可靠且高效系统软件的能力。",
                 start: "马上开始", src: "查看源码",
@@ -606,7 +206,7 @@
                 footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议"
             },
             en: {
-                nav_doc: "Docs", nav_learn: "LearnVix",
+                nav_home: "Home", nav_doc: "Docs",
                 title: "Vix",
                 desc: "A language empowering everyone to build simple, reliable, and efficient systems software.",
                 start: "Get Started", src: "View Source",
@@ -621,18 +221,8 @@
                 footer_txt: "Maintained by VIx Lang Contributors | MIT License"
             }
         };
-
-        function setLang(lang) {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) {
-                    el.innerText = translations[lang][key];
-                }
-            });
-            document.getElementById('btn-zh').className = lang === 'zh' ? 'active' : '';
-            document.getElementById('btn-en').className = lang === 'en' ? 'active' : '';
-            document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-        }
     </script>
 </body>
 </html>
+
+
