@@ -473,8 +473,8 @@
             flex: 1;
             min-width: 280px;
             max-width: min(100%, 640px);
-            background: var(--gray-dark);
-            border: 1px solid var(--border);
+            background: #282c34;
+            border: 1px solid #3e4452;
             border-radius: 10px;
             padding: 24px 28px;
             transition: all 0.4s ease;
@@ -486,8 +486,8 @@
             top: 0; left: 0; right: 0;
             height: 3px;
         }
-        .demo-panel.before-panel::before { background: #e06c75; }
-        .demo-panel.after-panel::before { background: #98c379; }
+        .demo-panel.before-panel::before { background: var(--orange); }
+        .demo-panel.after-panel::before { background: var(--orange); }
 
         .demo-panel-label {
             font-size: 0.7rem;
@@ -499,8 +499,8 @@
             align-items: center;
             gap: 8px;
         }
-        .before-panel .demo-panel-label { color: #e06c75; }
-        .after-panel .demo-panel-label { color: #98c379; }
+        .before-panel .demo-panel-label { color: var(--orange); }
+        .after-panel .demo-panel-label { color: var(--orange); }
 
         .demo-icon {
             display: inline-flex;
@@ -512,8 +512,8 @@
             font-size: 0.6rem;
             font-weight: 700;
         }
-        .before-panel .demo-icon { background: #e06c75; color: #fff; }
-        .after-panel .demo-icon { background: #98c379; color: #fff; }
+        .before-panel .demo-icon { background: var(--orange); color: #fff; }
+        .after-panel .demo-icon { background: var(--orange); color: #fff; }
 
         .demo-cmd {
             font-family: "Iosevka", Consolas, monospace;
