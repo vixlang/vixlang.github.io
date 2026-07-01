@@ -10,13 +10,27 @@ var VixcWasm = {
     }
 };
 
+console.log('[vixc-wasm] pre.js loaded, Module=', typeof Module);
+
 Module.onProgress = function(progress) {
     var bar = document.getElementById('loading-bar');
     if (bar) bar.style.width = (progress * 100) + '%';
 };
 
+Module.onRuntimeInitialized = function() {
+    console.log('[vixc-wasm] onRuntimeInitialized');
+    onVixcWasmReady();
+};
+
 function onVixcWasmReady() {
+    console.log('[vixc-wasm] onVixcWasmReady called');
     VixcWasm._wasm_ready = true;
     VixcWasm._pending.forEach(function(p) { p.resolve(); });
     VixcWasm._pending = [];
+    if (typeof window.onVixcWasmReady === 'function') {
+        console.log('[vixc-wasm] calling window.onVixcWasmReady');
+        window.onVixcWasmReady();
+    } else {
+        console.log('[vixc-wasm] window.onVixcWasmReady NOT set yet');
+    }
 }
