@@ -10,22 +10,38 @@
 <body>
     <div id="loading-overlay">
         <div id="loading-bar-container">
-            <div id="loading-bar"></div>
+            <img src="../logo.png" alt="Vix" id="loading-icon">
+            <div id="loading-bar-track">
+                <div id="loading-bar"></div>
+            </div>
             <p id="loading-text">正在加载 Vix 编译器...</p>
         </div>
     </div>
     <div id="app">
         <header>
-            <h1>Vix Playground</h1>
-            <div id="status-bar">
-                <span id="status-text">等待加载编译器...</span>
+            <div class="header-left">
+                <a href="../index.html" class="brand-link">
+                    <img src="../logo.png" alt="Vix">
+                    <span>Vix</span>
+                </a>
+                <div class="divider"></div>
+                <span class="page-title">Playground</span>
+            </div>
+            <div class="header-right">
+                <div id="status-indicator">
+                    <span id="status-dot"></span>
+                    <span id="status-text">等待加载编译器...</span>
+                </div>
                 <select id="example-selector">
                     <option value="hello">Hello World</option>
                     <option value="bubble">Bubble Sort</option>
                     <option value="struct">Struct</option>
                     <option value="binary-search">Binary Search</option>
                 </select>
-                <button id="btn-run" disabled>运行 (Ctrl+Enter)</button>
+                <button id="btn-run" disabled>
+                    ▶ 运行
+                    <span class="key-hint">Ctrl+Enter</span>
+                </button>
             </div>
         </header>
         <main>
@@ -34,6 +50,10 @@
                 <div id="output-tabs">
                     <button class="tab active" data-tab="output">输出</button>
                     <button class="tab" data-tab="wasm">WASM</button>
+                </div>
+                <div id="output-toolbar">
+                    <span class="output-label">Output</span>
+                    <button id="btn-clear-output">清除</button>
                 </div>
                 <div id="output-content"></div>
                 <div id="wasm-content" style="display:none"></div>
