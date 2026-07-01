@@ -59,7 +59,7 @@
 
     var editor = CodeMirror(document.getElementById('editor-container'), {
         value: initialCode,
-        mode: 'text/x-vix',
+        mode: 'text/x-rustsrc',
         theme: 'vix-dark',
         lineNumbers: true,
         indentUnit: 4,
