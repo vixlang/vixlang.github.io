@@ -1,11 +1,46 @@
 (function() {
-    const DEFAULT_CODE = 'fn main(): i32 {\n'
-        + '    print("Hello, Vix Playground!")\n'
-        + '    return 0\n'
-        + '}';
+    var EXAMPLES = {
+        hello: 'fn main(): i32 {\n'
+            + '    print("Hello, Vix Playground!")\n'
+            + '    return 0\n'
+            + '}',
+        fib: 'fn fib(n: i32): i32 {\n'
+            + '    if n <= 1 { return n }\n'
+            + '    return fib(n - 1) + fib(n - 2)\n'
+            + '}\n'
+            + 'fn main(): i32 {\n'
+            + '    print(fib(10))\n'
+            + '    return 0\n'
+            + '}',
+        struct: 'struct Point {\n'
+            + '    x: i32,\n'
+            + '    y: i32,\n'
+            + '}\n'
+            + 'fn main(): i32 {\n'
+            + '    let p = Point { x: 3, y: 4 }\n'
+            + '    print(p.x)\n'
+            + '    return 0\n'
+            + '}',
+        match: 'fn describe(n: i32): i32 {\n'
+            + '    match n {\n'
+            + '        0 => { print("zero") }\n'
+            + '        1 => { print("one") }\n'
+            + '        _ => { print("many") }\n'
+            + '    }\n'
+            + '    return 0\n'
+            + '}\n'
+            + 'fn main(): i32 {\n'
+            + '    describe(0)\n'
+            + '    describe(2)\n'
+            + '    return 0\n'
+            + '}',
+    };
+
+    var saved = localStorage.getItem('vix-playground-code');
+    var initialCode = saved && EXAMPLES[saved] ? EXAMPLES[saved] : (saved || EXAMPLES.hello);
 
     var editor = CodeMirror(document.getElementById('editor-container'), {
-        value: DEFAULT_CODE,
+        value: initialCode,
         mode: 'text/x-vix',
         theme: 'default',
         lineNumbers: true,
@@ -18,8 +53,22 @@
         }
     });
 
+    editor.on('change', function() {
+        localStorage.setItem('vix-playground-code', editor.getValue());
+    });
+
     var statusText = document.getElementById('status-text');
     var runBtn = document.getElementById('btn-run');
+    var exampleSel = document.getElementById('example-selector');
+    var loadingOverlay = document.getElementById('loading-overlay');
+
+    exampleSel.addEventListener('change', function() {
+        var code = EXAMPLES[this.value];
+        if (code) {
+            editor.setValue(code);
+            localStorage.setItem('vix-playground-code', code);
+        }
+    });
 
     var wasmModule = null;
     var outputText = '';
@@ -28,6 +77,22 @@
         var el = document.getElementById('output-content');
         el.textContent = outputText;
         el.scrollTop = el.scrollHeight;
+    }
+
+    function formatCompileError(raw) {
+        var lines = raw.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+            if (lines[i].includes('SyntaxError') || lines[i].includes('TypeError')) {
+                var m = lines[i].match(/:(\d+):(\d+)/);
+                if (m) {
+                    var line = parseInt(m[1]);
+                    var col = parseInt(m[2]);
+                    return '行 ' + line + ', 列 ' + col + ': ' + lines[i];
+                }
+                return lines[i];
+            }
+        }
+        return raw || '未知错误';
     }
 
     function createWasmImports(wasmMemory) {
@@ -65,7 +130,10 @@
                 [source, null, null, null]);
 
             if (!resultPtr) {
-                outputEl.textContent = '编译错误';
+                var errPtr = Module.getValue(resultPtr + 8, 'i32');
+                var errorMsg = errPtr ? Module.UTF8ToString(errPtr) : '编译失败';
+                outputEl.textContent = formatCompileError(errorMsg);
+                Module.ccall('free_wasm_result', null, ['number', 'number'], [null, errPtr]);
                 return;
             }
 
@@ -90,6 +158,7 @@
     window.onVixcWasmReady = function() {
         statusText.textContent = '编译器就绪';
         runBtn.disabled = false;
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
     };
 
     document.querySelectorAll('[data-tab]').forEach(function(btn) {

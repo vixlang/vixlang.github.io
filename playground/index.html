@@ -8,11 +8,23 @@
     <link rel="stylesheet" href="playground.css">
 </head>
 <body>
+    <div id="loading-overlay">
+        <div id="loading-bar-container">
+            <div id="loading-bar"></div>
+            <p id="loading-text">正在加载 Vix 编译器...</p>
+        </div>
+    </div>
     <div id="app">
         <header>
             <h1>Vix Playground</h1>
             <div id="status-bar">
                 <span id="status-text">等待加载编译器...</span>
+                <select id="example-selector">
+                    <option value="hello">Hello World</option>
+                    <option value="fib">Fibonacci</option>
+                    <option value="struct">Struct</option>
+                    <option value="match">Pattern Matching</option>
+                </select>
                 <button id="btn-run" disabled>运行 (Ctrl+Enter)</button>
             </div>
         </header>
