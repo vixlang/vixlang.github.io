@@ -5,6 +5,8 @@
     <title>Vix Playground</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/lint/lint.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/hint/show-hint.min.css">
     <link rel="stylesheet" href="playground.css">
 </head>
 <body>
@@ -37,6 +39,10 @@
                     <option value="bubble">Bubble Sort</option>
                     <option value="struct">Struct</option>
                     <option value="binary-search">Binary Search</option>
+                    <option value="fib">Fibonacci</option>
+                    <option value="match">Pattern Match</option>
+                    <option value="quicksort">QuickSort</option>
+                    <option value="pointer">Pointer</option>
                 </select>
                 <button id="btn-run" disabled>
                     ▶ 运行
@@ -64,7 +70,11 @@
     <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/lib/codemirror.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/mode/simple.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/mode/rust/rust.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/lint/lint.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/hint/show-hint.min.js"></script>
     <script src="vixc-wasm.js"></script>
+    <script src="vix-lang.js"></script>
+    <script src="vix-cm.js"></script>
     <script src="playground.js"></script>
 </body>
 </html>

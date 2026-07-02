@@ -52,6 +52,82 @@
             + '    print(binary_search(arr, 100))\n'
             + '    return 0\n'
             + '}',
+        fib: 'fn fib(n: i32): i32 {\n'
+            + '    let mut a = 0\n'
+            + '    let mut b = 1\n'
+            + '    for (i in 1 .. n) {\n'
+            + '        let c = a + b\n'
+            + '        a = b\n'
+            + '        b = c\n'
+            + '    }\n'
+            + '    return b\n'
+            + '}\n'
+            + 'fn main(): i32 {\n'
+            + '    print(fib(10))\n'
+            + '    return 0\n'
+            + '}',
+        match: 'fn find(arr: [i32], target: i32): ?i32 {\n'
+            + '    for (i in 0 .. arr.length) {\n'
+            + '        if (arr[i] == target) {\n'
+            + '            return Some(i)\n'
+            + '        }\n'
+            + '    }\n'
+            + '    return None\n'
+            + '}\n'
+            + 'fn main(): i32 {\n'
+            + '    let arr = [10, 20, 30, 40, 50]\n'
+            + '    match find(arr, 30) {\n'
+            + '        Some(idx) -> print(idx)\n'
+            + '        None -> print(-1)\n'
+            + '    }\n'
+            + '    match find(arr, 99) {\n'
+            + '        Some(idx) -> print(idx)\n'
+            + '        None -> print(-1)\n'
+            + '    }\n'
+            + '    return 0\n'
+            + '}',
+        quicksort: 'fn partition(arr: ref [i32], low: i32, high: i32): i32 {\n'
+            + '    let pivot = arr[high]\n'
+            + '    let mut i = low - 1\n'
+            + '    for (j in low .. high) {\n'
+            + '        if (arr[j] <= pivot) {\n'
+            + '            i = i + 1\n'
+            + '            let temp = arr[i]\n'
+            + '            arr[i] = arr[j]\n'
+            + '            arr[j] = temp\n'
+            + '        }\n'
+            + '    }\n'
+            + '    i = i + 1\n'
+            + '    let temp = arr[i]\n'
+            + '    arr[i] = arr[high]\n'
+            + '    arr[high] = temp\n'
+            + '    return i\n'
+            + '}\n'
+            + 'fn quicksort(arr: ref [i32], low: i32, high: i32) {\n'
+            + '    if (low < high) {\n'
+            + '        let pi = partition(arr, low, high)\n'
+            + '        quicksort(arr, low, pi - 1)\n'
+            + '        quicksort(arr, pi + 1, high)\n'
+            + '    }\n'
+            + '}\n'
+            + 'fn main(): i32 {\n'
+            + '    let arr = [10, 7, 8, 9, 1, 5]\n'
+            + '    quicksort(ref arr, 0, 5)\n'
+            + '    for (i in 0 .. 6) {\n'
+            + '        print(arr[i])\n'
+            + '    }\n'
+            + '    return 0\n'
+            + '}',
+        pointer: 'fn main(): i32 {\n'
+            + '    let x = 10\n'
+            + '    let mut ptr = ref x\n'
+            + '    @ptr = 20\n'
+            + '    let arr = [1, 2, 3, 4, 5]\n'
+            + '    let p = ref arr[0]\n'
+            + '    let second = @(p + 1)\n'
+            + '    print(second)\n'
+            + '    return 0\n'
+            + '}',
     };
 
     var saved = localStorage.getItem('vix-playground-code');
@@ -65,11 +141,13 @@
         indentUnit: 4,
         tabSize: 4,
         autofocus: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"],
         extraKeys: {
             'Ctrl-Enter': runCode,
             'Cmd-Enter': runCode
         }
     });
+    setupVixLSP(editor);
 
     editor.on('change', function() {
         localStorage.setItem('vix-playground-code', editor.getValue());

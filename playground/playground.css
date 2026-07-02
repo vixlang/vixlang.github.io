@@ -475,3 +475,57 @@ main {
     #output-container { height: 30vh; }
     #editor-container { height: 70vh; }
 }
+
+/* Lint annotations */
+.cm-s-vix-dark .CodeMirror-lint-markers {
+    width: 16px;
+}
+.cm-s-vix-dark .CodeMirror-lint-mark-error {
+    background: rgba(243, 139, 168, 0.6);
+}
+.cm-s-vix-dark .CodeMirror-lint-mark-warning {
+    background: rgba(229, 192, 123, 0.5);
+}
+.cm-s-vix-dark .CodeMirror-lint-mark-info {
+    background: rgba(137, 180, 250, 0.4);
+}
+.cm-s-vix-dark .cm-lint-error {
+    text-decoration: wavy underline;
+    text-decoration-color: var(--red);
+    text-underline-offset: 2px;
+}
+.cm-s-vix-dark .cm-lint-warning {
+    background: rgba(229, 192, 123, 0.06);
+    border-bottom: 1px dotted rgba(229, 192, 123, 0.35);
+}
+.cm-s-vix-dark .cm-lint-info {
+    border-bottom: 1px dotted rgba(137, 180, 250, 0.3);
+}
+.cm-s-vix-dark .CodeMirror-lint-tooltip {
+    background: var(--mantle);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-sm);
+    color: var(--subtext0);
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+/* Hint popup */
+.CodeMirror-hints {
+    background: var(--mantle);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    font-family: "Iosevka", "Fira Code", monospace;
+    font-size: 13px;
+    padding: 4px;
+}
+.CodeMirror-hint {
+    color: var(--text);
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+.CodeMirror-hint-active {
+    background: var(--orange);
+    color: #fff;
+}
