@@ -49,8 +49,15 @@
                     </div>
                 </div>
                 <div class="hero-code hero-line hero-line-4">
+                    <div class="code-tabs" role="tablist">
+                        <button class="code-tab active" role="tab" aria-selected="true" data-panel="panel-0">模式匹配</button>
+                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-1">Fibonacci</button>
+                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-2">结构体</button>
+                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-3">泛型</button>
+                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-4">指针</button>
+                    </div>
                     <div class="code-sample">
-<pre><code><span class="code-keyword">fn</span> <span class="code-title">find</span>(<span class="code-param">arr</span>: <span class="code-type">[i32]</span>, <span class="code-param">target</span>: <span class="code-type">i32</span>): <span class="code-type">?i32</span> {
+<pre id="panel-0"><code><span class="code-keyword">fn</span> <span class="code-title">find</span>(<span class="code-param">arr</span>: <span class="code-type">[i32]</span>, <span class="code-param">target</span>: <span class="code-type">i32</span>): <span class="code-type">?i32</span> {
     <span class="code-keyword">for</span> (<span class="code-param">i</span> <span class="code-keyword">in</span> <span class="code-number">0</span> .. <span class="code-param">arr</span>.<span class="code-property">length</span>) {
         <span class="code-keyword">if</span> (<span class="code-param">arr</span>[<span class="code-param">i</span>] == <span class="code-param">target</span>) {
             <span class="code-keyword">return</span> <span class="code-title">Some</span>(<span class="code-param">i</span>)
@@ -71,6 +78,64 @@
         <span class="code-title">Some</span>(<span class="code-param">idx</span>) -&gt; print(<span class="code-string">"Found at index: "</span>, <span class="code-param">idx</span>)
         <span class="code-title">None</span>      -&gt; print(<span class="code-string">"Not found"</span>)
     }
+    <span class="code-keyword">return</span> <span class="code-number">0</span>
+}</code></pre>
+<pre id="panel-1" style="display:none"><code><span class="code-keyword">fn</span> <span class="code-title">fib</span>(<span class="code-param">n</span>: <span class="code-type">i32</span>): <span class="code-type">i32</span> {
+    <span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-param">a</span> = <span class="code-number">0</span>
+    <span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-param">b</span> = <span class="code-number">1</span>
+    <span class="code-keyword">for</span> (<span class="code-param">i</span> <span class="code-keyword">in</span> <span class="code-number">1</span> .. <span class="code-param">n</span>) {
+        <span class="code-keyword">let</span> <span class="code-param">c</span> = <span class="code-param">a</span> + <span class="code-param">b</span>
+        <span class="code-param">a</span> = <span class="code-param">b</span>
+        <span class="code-param">b</span> = <span class="code-param">c</span>
+    }
+    <span class="code-keyword">return</span> <span class="code-param">b</span>
+}
+
+<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
+    <span class="code-title">print</span>(<span class="code-title">fib</span>(<span class="code-number">40</span>))
+    <span class="code-keyword">return</span> <span class="code-number">0</span>
+}</code></pre>
+<pre id="panel-2" style="display:none"><code><span class="code-keyword">type</span> <span class="code-title">Person</span> = <span class="code-keyword">struct</span> {
+    <span class="code-param">name</span>: <span class="code-type">string</span>,
+    <span class="code-param">age</span>:  <span class="code-type">i32</span>,
+    <span class="code-param">height</span>: <span class="code-type">f64</span>
+}
+
+<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
+    <span class="code-keyword">let</span> <span class="code-param">p</span> = <span class="code-title">Person</span> {
+        <span class="code-param">name</span>: <span class="code-string">"Alice"</span>,
+        <span class="code-param">age</span>: <span class="code-number">25</span>,
+        <span class="code-param">height</span>: <span class="code-number">5.7</span>
+    }
+    <span class="code-title">print</span>(<span class="code-string">"Name: "</span>, <span class="code-param">p</span>.<span class="code-property">name</span>)
+    <span class="code-title">print</span>(<span class="code-string">"Age: "</span>, <span class="code-param">p</span>.<span class="code-property">age</span>)
+    <span class="code-keyword">return</span> <span class="code-number">0</span>
+}</code></pre>
+<pre id="panel-3" style="display:none"><code><span class="code-keyword">struct</span> <span class="code-title">Box</span>:[<span class="code-type">T</span>] {
+    <span class="code-param">value</span>: <span class="code-type">T</span>
+}
+
+<span class="code-keyword">fn</span> <span class="code-title">id</span>:[<span class="code-type">T</span>](<span class="code-param">value</span>: <span class="code-type">T</span>): <span class="code-type">T</span> {
+    <span class="code-keyword">return</span> <span class="code-param">value</span>
+}
+
+<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
+    <span class="code-keyword">let</span> <span class="code-param">b</span> = <span class="code-title">Box</span>:[<span class="code-type">i32</span>]{ <span class="code-param">value</span>: <span class="code-number">10</span> }
+    <span class="code-keyword">let</span> <span class="code-param">x</span> = <span class="code-title">id</span>:[<span class="code-type">i32</span>](<span class="code-param">b</span>.<span class="code-property">value</span>)
+    <span class="code-title">print</span>(<span class="code-param">x</span>)
+    <span class="code-keyword">return</span> <span class="code-number">0</span>
+}</code></pre>
+<pre id="panel-4" style="display:none"><code><span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
+    <span class="code-keyword">let</span> <span class="code-param">x</span> = <span class="code-number">10</span>
+    <span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-param">ptr</span> = <span class="code-keyword">ref</span> <span class="code-param">x</span>
+
+    <span class="code-keyword">let</span> <span class="code-param">value</span> = @<span class="code-param">ptr</span>
+    @<span class="code-param">ptr</span> = <span class="code-number">20</span>
+
+    <span class="code-keyword">let</span> <span class="code-param">arr</span> = [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>]
+    <span class="code-keyword">let</span> <span class="code-param">p</span> = <span class="code-keyword">ref</span> <span class="code-param">arr</span>[<span class="code-number">0</span>]
+    <span class="code-keyword">let</span> <span class="code-param">second</span> = @(<span class="code-param">p</span> + <span class="code-number">1</span>)
+    <span class="code-title">print</span>(<span class="code-param">second</span>)
     <span class="code-keyword">return</span> <span class="code-number">0</span>
 }</code></pre>
                     </div>

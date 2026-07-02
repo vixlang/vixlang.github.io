@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <title>Vix Playground</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/lib/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/lint/lint.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/hint/show-hint.min.css">
+    <link rel="stylesheet" href="vendor/codemirror.css">
+    <link rel="stylesheet" href="vendor/codemirror-lint.css">
+    <link rel="stylesheet" href="vendor/codemirror-hint.css">
     <link rel="stylesheet" href="playground.css">
 </head>
 <body>
@@ -43,7 +43,6 @@
                     <option value="pointer">Pointer</option>
                     <option value="match">Pattern Match</option>
                     <option value="quicksort">QuickSort</option>
-                    <option value="pointer">Pointer</option>
                 </select>
                 <button id="btn-run" disabled>
                     ▶ 运行
@@ -68,14 +67,14 @@
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/lib/codemirror.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/mode/simple.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/mode/rust/rust.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/lint/lint.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/hint/show-hint.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/edit/closebrackets.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/edit/matchbrackets.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/addon/search/match-highlighter.min.js"></script>
+    <script src="vendor/codemirror.js"></script>
+    <script src="vendor/codemirror-simple.js"></script>
+    <script src="vendor/codemirror-rust.js"></script>
+    <script src="vendor/codemirror-lint.js"></script>
+    <script src="vendor/codemirror-hint.js"></script>
+    <script src="vendor/codemirror-closebrackets.js"></script>
+    <script src="vendor/codemirror-matchbrackets.js"></script>
+    <script src="vendor/codemirror-match-highlighter.js"></script>
     <script src="vixc-wasm.js"></script>
     <script src="vix-lang.js"></script>
     <script src="vix-cm.js"></script>

@@ -149,6 +149,31 @@
         };
     }
 
+    function setupCodeTabs() {
+        document.querySelectorAll('.code-tabs').forEach(tabGroup => {
+            tabGroup.addEventListener('click', e => {
+                const tab = e.target.closest('.code-tab');
+                if (!tab) return;
+
+                const container = tabGroup.closest('.hero-code');
+                const panelId = tab.dataset.panel;
+
+                tabGroup.querySelectorAll('.code-tab').forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
+
+                container.querySelectorAll('.code-sample > pre').forEach(p => {
+                    p.style.display = 'none';
+                });
+                const panel = document.getElementById(panelId);
+                if (panel) panel.style.display = '';
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         setupLanguageSwitch();
         setupMobileNav();
@@ -156,5 +181,6 @@
         setupProgressBar();
         setupPointerGlow();
         enhanceDemoTransitions();
+        setupCodeTabs();
     });
 })();
