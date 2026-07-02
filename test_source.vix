@@ -1,0 +1,10 @@
+fn main(): i32 {
+    let x = 10
+    let mut ptr = ref x
+    @ptr = 20
+    let arr = [1, 2, 3, 4, 5]
+    let p = ref arr[0]
+    let second = @(p + 1)
+    print(second)
+    return 0
+}
