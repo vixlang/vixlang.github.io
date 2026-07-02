@@ -224,7 +224,7 @@
     runBtn.disabled = true;
     setStatus('正在加载编译器 (5-10 MB)...', false);
 
-    window.onVixcWasmReady = function() {
+    window.__vixcWasmReady = function() {
         console.log('[playground] onVixcWasmReady fired');
         setStatus('编译器就绪', true);
         runBtn.disabled = false;
