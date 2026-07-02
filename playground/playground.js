@@ -141,6 +141,9 @@
         indentUnit: 4,
         tabSize: 4,
         autofocus: true,
+        autoCloseBrackets: "()[]{}''\"\"",
+        matchBrackets: true,
+        highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: false },
         gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"],
         extraKeys: {
             'Ctrl-Enter': runCode,

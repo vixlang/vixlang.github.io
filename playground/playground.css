@@ -529,3 +529,41 @@ main {
     background: var(--orange);
     color: #fff;
 }
+
+/* Hover tooltip */
+.vix-hover-tooltip {
+    position: fixed;
+    z-index: 10000;
+    max-width: 320px;
+    background: var(--mantle);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-sm);
+    color: var(--subtext0);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    white-space: pre-line;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+/* Signature tooltip */
+.vix-signature-tooltip {
+    position: fixed;
+    z-index: 10000;
+    background: var(--mantle);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-sm);
+    color: var(--subtext0);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 6px 10px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.vix-signature-tooltip .sig-name {
+    color: var(--text);
+    font-family: "Iosevka", "Fira Code", monospace;
+    font-size: 13px;
+}
