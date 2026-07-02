@@ -24,9 +24,9 @@
             + '    }\n'
             + '    return 0\n'
             + '}',
-        struct: 'struct Point {\n'
-            + '    x: i32,\n'
-            + '    y: i32,\n'
+        struct: 'type Point = struct {\n'
+            + '    x: i32\n'
+            + '    y: i32\n'
             + '}\n'
             + 'fn main(): i32 {\n'
             + '    let p = Point { x: 3, y: 4 }\n'
