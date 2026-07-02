@@ -1,9 +1,14 @@
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#else
+#define EM_ASM(...)
+#endif
 #include "../src/libvixc_frontend.h"
 #include "parser.h"
 #include "semantic.h"
 #include "typeck.h"
 #include "ownership.h"
+#include "compiler.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -48,6 +53,7 @@ CompileResult vixc_compile_string(const char *source) {
 
     if (parse_result != 0 || !root) {
         result.error_count = 1;
+        set_error(get_last_error_message());
         return result;
     }
 
@@ -57,6 +63,7 @@ CompileResult vixc_compile_string(const char *source) {
     EM_ASM({ console.log('[vixc_frontend] check_undefined_symbols...'); });
     if (check_undefined_symbols(root) > 0) {
         result.error_count = 1;
+        set_error(get_last_error_message());
         free_ast(root);
         root = NULL;
         return result;
@@ -65,6 +72,7 @@ CompileResult vixc_compile_string(const char *source) {
     EM_ASM({ console.log('[vixc_frontend] typecheck...'); });
     if (typecheck_program(root) != 0) {
         result.error_count = 1;
+        set_error(get_last_error_message());
         free_ast(root);
         root = NULL;
         return result;
@@ -73,6 +81,7 @@ CompileResult vixc_compile_string(const char *source) {
     EM_ASM({ console.log('[vixc_frontend] ownership_check...'); });
     if (ownership_check_program(root) != 0) {
         result.error_count = 1;
+        set_error(get_last_error_message());
         free_ast(root);
         root = NULL;
         return result;
