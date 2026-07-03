@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head><title>Vix Pointer Test</title></head>
+<body>
+<h3>Vix Pointer Test</h3>
+<pre id="output"></pre>
+<script src="vixc-wasm.js"></script>
+<script>
+var out = document.getElementById('output');
+
+function log(t) { out.textContent += t + '\n'; }
+
+window.__vixcWasmReady = function() {
+    var source = 'fn main(): i32 {\n    let x = 10\n    let mut ptr = ref x\n    @ptr = 20\n    let arr = [1, 2, 3, 4, 5]\n    let p = ref arr[0]\n    let second = @(p + 1)\n    print(second)\n    return 0\n}';
+    
+    var M = Module;
+    var po = M._malloc(4), lo = M._malloc(4), eo = M._malloc(4);
+    M.setValue(po, 0, 'i32'); M.setValue(lo, 0, 'i32'); M.setValue(eo, 0, 'i32');
+    
+    var ok = M.ccall('compile_vix', 'number', ['string', 'number', 'number', 'number'], [source, po, lo, eo]);
+    log('compile: ' + (ok ? 'OK' : 'FAIL'));
+    
+    if (ok) {
+        var ptr = M.getValue(po, 'i32');
+        var len = M.getValue(lo, 'i32');
+        log('wasm size: ' + len);
+        
+        var wasmBytes = HEAPU8.slice(ptr, ptr + len);
+        M.ccall('free_wasm_result', null, ['number', 'number'], [ptr, 0]);
+        M._free(po); M._free(lo); M._free(eo);
+        
+        var importObj = {
+            env: {
+                vix_putchar: function(c) { log('putchar: ' + String.fromCharCode(c)); },
+                vix_puts: function(p) { 
+                    var s = '';
+                    var mem = new Uint8Array(wasmMod.exports.memory.buffer);
+                    while (mem[p]) { s += String.fromCharCode(mem[p]); p++; }
+                    log('puts: ' + s);
+                },
+                vix_print_i32: function(v) { log('print_i32: ' + v); },
+                vix_exit: function(c) { log('exit: ' + c); }
+            }
+        };
+        
+        WebAssembly.instantiate(wasmBytes, importObj).then(function(r) {
+            wasmMod = r.instance;
+            log('exports: ' + Object.keys(wasmMod.exports));
+            var result = wasmMod.exports.main();
+            log('main returned: ' + result);
+            if (outputs.includes(2)) log('PASS: output is 2');
+            else log('FAIL: expected 2, got something else');
+        });
+    }
+};
+
+var outputs = [];
+var wasmMod = null;
+var _orig_print_i32 = Module.print;
+Module.print = function(t) {};
+Module.printErr = function(t) {};
+Module.noInitialRun = true;
+</script>
+</body>
+</html>
