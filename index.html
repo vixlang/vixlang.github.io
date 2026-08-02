@@ -5,6 +5,7 @@
     <title>Vix Lang</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="description" content="一门静态类型、编译型语言。使用 LLVM 后端，支持泛型、ADT、模式匹配、指针运算。">
+    <link rel="icon" href="image.ico" type="image/x-icon">
     <link rel="stylesheet" href="assets/site.css">
     <script src="assets/site.js" defer></script>
 </head>
@@ -49,93 +50,38 @@
                     </div>
                 </div>
                 <div class="hero-code hero-line hero-line-4">
-                    <div class="code-tabs" role="tablist">
-                        <button class="code-tab active" role="tab" aria-selected="true" data-panel="panel-0">模式匹配</button>
-                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-1">Fibonacci</button>
-                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-2">结构体</button>
-                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-3">泛型</button>
-                        <button class="code-tab" role="tab" aria-selected="false" data-panel="panel-4">指针</button>
-                    </div>
                     <div class="code-sample">
-<pre id="panel-0"><code><span class="code-keyword">fn</span> <span class="code-title">find</span>(<span class="code-param">arr</span>: <span class="code-type">[i32]</span>, <span class="code-param">target</span>: <span class="code-type">i32</span>): <span class="code-type">?i32</span> {
-    <span class="code-keyword">for</span> (<span class="code-param">i</span> <span class="code-keyword">in</span> <span class="code-number">0</span> .. <span class="code-param">arr</span>.<span class="code-property">length</span>) {
-        <span class="code-keyword">if</span> (<span class="code-param">arr</span>[<span class="code-param">i</span>] == <span class="code-param">target</span>) {
-            <span class="code-keyword">return</span> <span class="code-title">Some</span>(<span class="code-param">i</span>)
-        }
-    }
-    <span class="code-keyword">return</span> <span class="code-title">None</span>
+<pre id="panel-0"><code><span class="code-keyword">import</span> <span class="code-title">string</span>
+<span class="code-keyword">import</span> <span class="code-title">file</span>
+<span class="code-keyword">type</span> <span class="code-title">Result</span>:[<span class="code-type">T</span>, <span class="code-type">E</span>] = <span class="code-title">Ok</span>(<span class="code-type">T</span>) | <span class="code-title">Err</span>(<span class="code-type">E</span>)
+
+<span class="code-keyword">fn</span> <span class="code-title">loadName</span>(<span class="code-param">path</span>:<span class="code-type">string</span>): <span class="code-title">Result</span>:[<span class="code-type">string</span>, <span class="code-type">string</span>]
+{
+
+    <span class="code-keyword">let</span> <span class="code-param">name</span> =
+        <span class="code-keyword">try</span> <span class="code-title">file</span>.<span class="code-property">read</span>(<span class="code-param">path</span>)
+        <span class="code-title">|&gt;</span> <span class="code-title">string</span>.<span class="code-property">trim</span>
+        <span class="code-title">|&gt;</span> <span class="code-title">string</span>.<span class="code-property">uppercase</span>
+
+    <span class="code-keyword">return</span> <span class="code-title">Ok</span>(<span class="code-param">name</span>)
+
 }
 
-<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
-    <span class="code-keyword">let</span> <span class="code-param">arr</span> = [<span class="code-number">10</span>, <span class="code-number">20</span>, <span class="code-number">30</span>, <span class="code-number">40</span>, <span class="code-number">50</span>]
+<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span>
+{
 
-    <span class="code-keyword">match</span> find(<span class="code-param">arr</span>, <span class="code-number">30</span>) {
-        <span class="code-title">Some</span>(<span class="code-param">idx</span>) -&gt; print(<span class="code-string">"Found at index: "</span>, <span class="code-param">idx</span>)
-        <span class="code-title">None</span>      -&gt; print(<span class="code-string">"Not found"</span>)
+    <span class="code-keyword">match</span> <span class="code-title">loadName</span>(<span class="code-string">"user.txt"</span>)
+    {
+
+        <span class="code-title">Ok</span>(<span class="code-param">name</span>) <span class="code-title">→</span>
+            <span class="code-title">print</span>(<span class="code-string">"Hello"</span>, <span class="code-param">name</span>)
+
+
+        <span class="code-title">Err</span>(<span class="code-param">e</span>) <span class="code-title">→</span>
+            <span class="code-title">print</span>(<span class="code-string">"Error:"</span>, <span class="code-param">e</span>)
+
     }
 
-    <span class="code-keyword">match</span> find(<span class="code-param">arr</span>, <span class="code-number">99</span>) {
-        <span class="code-title">Some</span>(<span class="code-param">idx</span>) -&gt; print(<span class="code-string">"Found at index: "</span>, <span class="code-param">idx</span>)
-        <span class="code-title">None</span>      -&gt; print(<span class="code-string">"Not found"</span>)
-    }
-    <span class="code-keyword">return</span> <span class="code-number">0</span>
-}</code></pre>
-<pre id="panel-1" style="display:none"><code><span class="code-keyword">fn</span> <span class="code-title">fib</span>(<span class="code-param">n</span>: <span class="code-type">i32</span>): <span class="code-type">i32</span> {
-    <span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-param">a</span> = <span class="code-number">0</span>
-    <span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-param">b</span> = <span class="code-number">1</span>
-    <span class="code-keyword">for</span> (<span class="code-param">i</span> <span class="code-keyword">in</span> <span class="code-number">1</span> .. <span class="code-param">n</span>) {
-        <span class="code-keyword">let</span> <span class="code-param">c</span> = <span class="code-param">a</span> + <span class="code-param">b</span>
-        <span class="code-param">a</span> = <span class="code-param">b</span>
-        <span class="code-param">b</span> = <span class="code-param">c</span>
-    }
-    <span class="code-keyword">return</span> <span class="code-param">b</span>
-}
-
-<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
-    <span class="code-title">print</span>(<span class="code-title">fib</span>(<span class="code-number">40</span>))
-    <span class="code-keyword">return</span> <span class="code-number">0</span>
-}</code></pre>
-<pre id="panel-2" style="display:none"><code><span class="code-keyword">type</span> <span class="code-title">Person</span> = <span class="code-keyword">struct</span> {
-    <span class="code-param">name</span>: <span class="code-type">string</span>,
-    <span class="code-param">age</span>:  <span class="code-type">i32</span>,
-    <span class="code-param">height</span>: <span class="code-type">f64</span>
-}
-
-<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
-    <span class="code-keyword">let</span> <span class="code-param">p</span> = <span class="code-title">Person</span> {
-        <span class="code-param">name</span>: <span class="code-string">"Alice"</span>,
-        <span class="code-param">age</span>: <span class="code-number">25</span>,
-        <span class="code-param">height</span>: <span class="code-number">5.7</span>
-    }
-    <span class="code-title">print</span>(<span class="code-string">"Name: "</span>, <span class="code-param">p</span>.<span class="code-property">name</span>)
-    <span class="code-title">print</span>(<span class="code-string">"Age: "</span>, <span class="code-param">p</span>.<span class="code-property">age</span>)
-    <span class="code-keyword">return</span> <span class="code-number">0</span>
-}</code></pre>
-<pre id="panel-3" style="display:none"><code><span class="code-keyword">struct</span> <span class="code-title">Box</span>:[<span class="code-type">T</span>] {
-    <span class="code-param">value</span>: <span class="code-type">T</span>
-}
-
-<span class="code-keyword">fn</span> <span class="code-title">id</span>:[<span class="code-type">T</span>](<span class="code-param">value</span>: <span class="code-type">T</span>): <span class="code-type">T</span> {
-    <span class="code-keyword">return</span> <span class="code-param">value</span>
-}
-
-<span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
-    <span class="code-keyword">let</span> <span class="code-param">b</span> = <span class="code-title">Box</span>:[<span class="code-type">i32</span>]{ <span class="code-param">value</span>: <span class="code-number">10</span> }
-    <span class="code-keyword">let</span> <span class="code-param">x</span> = <span class="code-title">id</span>:[<span class="code-type">i32</span>](<span class="code-param">b</span>.<span class="code-property">value</span>)
-    <span class="code-title">print</span>(<span class="code-param">x</span>)
-    <span class="code-keyword">return</span> <span class="code-number">0</span>
-}</code></pre>
-<pre id="panel-4" style="display:none"><code><span class="code-keyword">fn</span> <span class="code-title">main</span>(): <span class="code-type">i32</span> {
-    <span class="code-keyword">let</span> <span class="code-param">x</span> = <span class="code-number">10</span>
-    <span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-param">ptr</span> = <span class="code-keyword">ref</span> <span class="code-param">x</span>
-
-    <span class="code-keyword">let</span> <span class="code-param">value</span> = @<span class="code-param">ptr</span>
-    @<span class="code-param">ptr</span> = <span class="code-number">20</span>
-
-    <span class="code-keyword">let</span> <span class="code-param">arr</span> = [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>]
-    <span class="code-keyword">let</span> <span class="code-param">p</span> = <span class="code-keyword">ref</span> <span class="code-param">arr</span>[<span class="code-number">0</span>]
-    <span class="code-keyword">let</span> <span class="code-param">second</span> = @(<span class="code-param">p</span> + <span class="code-number">1</span>)
-    <span class="code-title">print</span>(<span class="code-param">second</span>)
     <span class="code-keyword">return</span> <span class="code-number">0</span>
 }</code></pre>
                     </div>
@@ -170,7 +116,7 @@
             <h2 data-i18n="build_title">用 Vix 构建应用</h2>
             <div class="highlight-bar"></div>
             <p class="build-intro" data-i18n="build_desc">
-                Vix 目前处于积极开发阶段（v0.3.3），核心语法和类型系统已经可用。以下是一些你可以尝试的方向，更多示例请参考官方仓库。
+                Vix 目前处于积极开发阶段，核心语法和类型系统已经可用。以下是一些你可以尝试的方向，更多示例请参考官方仓库。
             </p>
             <div class="build-grid reveal-grid">
                 <div class="build-card">

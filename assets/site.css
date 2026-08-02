@@ -167,14 +167,14 @@
             display: inline-block;
             min-width: 100%;
             box-sizing: border-box;
-            font-family: "Iosevka", Consolas, monospace;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-weight: 500;
             font-size: 1rem;
             line-height: 1.4;
             text-align: left;
         }
         .code-sample::-webkit-scrollbar { display: none; }
-        .code-sample code { font-family: "Iosevka", Consolas, monospace; font-weight: 500; letter-spacing: 0.03em; white-space: pre; }
+        .code-sample code { font-family: inherit; font-weight: 500; letter-spacing: 0.03em; white-space: pre; }
         .code-keyword { color: #CC7832; }
         .code-title { color: #FFC66D; }
         .code-string { color: #98c379; }
