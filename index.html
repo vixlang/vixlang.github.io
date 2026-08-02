@@ -6,16 +6,367 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="description" content="一门静态类型、编译型语言。使用 LLVM 后端，支持泛型、ADT、模式匹配、指针运算。">
     <link rel="icon" href="image.ico" type="image/x-icon">
-    <link rel="stylesheet" href="assets/site.css">
+    <!-- 代码示例专用字体：JetBrains Mono，清晰的可读性与连字支持；
+         加载失败时自动回退到系统等宽字体栈，不影响可用性 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- 设计说明：样式改为单文件内联交付，不再引用多页共用的 assets/site.css，
+         使本次瑞士国际主义重设计只作用于首页，不污染 very.html / playground 等页面 -->
+    <style>
+        /* ============================================================
+           设计总则（瑞士国际主义 / Swiss International Style）
+           1. 色彩：墨黑 #111 + 暖白 #fdfbf7 + 鲜明的焦橙主题色 #c2410c。
+              主题色用于：章节规线、主按钮、导航与链接的悬停/激活态、
+              卡片规线悬停、浅橙章节带、文本选区、键盘焦点框。
+           2. 零装饰、零动效：无图标、无插画、无圆角、无阴影、无渐变、
+              无毛玻璃；全站无任何动画与过渡特效，唯一的图形元素是 1px 分割线。
+           3. 视觉层次完全由字重（400/500/700/800）、字号阶梯、
+              字距（紧缩标题 / 加宽小标签）与留白建立。
+           4. 栅格：所有内容对齐 1200px 中央栏，分割线与栏边缘严格对齐。
+           5. 例外：代码示例保留彩色语法高亮（可读性的功能需求，非装饰）。
+           ============================================================ */
+        :root {
+            --ink: #111111;           /* 主墨色：近纯黑，承担全部强调 */
+            --ink-soft: #4c4c49;      /* 次级文字：黑的灰阶延展 */
+            --ink-faint: #8f8f8a;     /* 三级文字：更浅灰阶，用于元信息 */
+            --paper: #fdfbf7;         /* 暖白纸面：比纯白多一丝温度 */
+            --accent: #c2410c;        /* 主题色：焦橙，鲜明但不荧光 */
+            --accent-tint: #fceadb;   /* 主题色的浅底变体，仅用于文本选区 */
+            --accent-soft: #faf1e7;   /* 主题色的章节带底色：大面积、低存在感的暖 */
+            --font-sans: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+        }
+
+        * { box-sizing: border-box; }
+        html { overflow-x: hidden; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-sans); /* 新古典无衬线系统栈：Helvetica 血统是瑞士风格的基准字体 */
+            background: var(--paper);      /* 由暗色底翻转为白底：信息在纸上阅读，而非在屏幕上“发光” */
+            color: var(--ink);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 文本选区：主题色的浅底变体，可被察觉但不喧哗 */
+        ::selection { background: var(--accent-tint); color: var(--ink); }
+
+        /* 键盘焦点框：替代浏览器默认蓝圈，同时保住可访问性 */
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        /* 链接：默认墨色，悬停时下划线 + 主题橙，暖色以最小剂量渗透进交互 */
+        a { color: var(--ink); text-decoration: none; }
+        a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(24px, 4vw, 48px); }
+
+        /* 阅读进度条已移除：滚动驱动的指示条属于动态特效，与“零动效”要求冲突 */
+
+        /* ============ 导航 ============
+           改动理由：原设计为深色底上的彩色文字导航。
+           现改为通栏 1px 底线划出的白色导航带，层级靠字号与留白区分 */
+        nav { border-bottom: 1px solid var(--ink); position: relative; }
+        .nav-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            min-height: 64px; gap: 32px;
+        }
+        /* 导航 Logo 已删除：首屏大图即品牌，导航不再重复。
+           链接整体移到左侧（与内容栅格齐平），语言切换保留在最右 */
+        .nav-right { display: flex; align-items: center; gap: 32px; width: 100%; justify-content: space-between; }
+        .nav-links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
+        .nav-links a {
+            color: var(--ink);
+            font-size: 0.85rem;      /* 小字号 + 加宽字距 = 瑞士式导航标签 */
+            font-weight: 500;
+            letter-spacing: 0.04em;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent);
+            text-decoration: underline; text-decoration-color: var(--accent);
+            text-underline-offset: 6px; text-decoration-thickness: 1px;
+        }
+
+        /* 语言切换：去掉深色胶囊底，改为细框矩形（直角），激活态用点缀色下划线标记 */
+        .lang-switch {
+            display: flex; gap: 12px;
+            border: 1px solid var(--ink);
+            padding: 4px 12px;
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .lang-switch button {
+            appearance: none; border: 0; background: transparent; padding: 0;
+            font: inherit; color: var(--ink-faint); cursor: pointer;
+        }
+        .lang-switch button:hover { color: var(--ink); }
+        .lang-switch button.active {
+            color: var(--ink);
+            text-decoration: underline;
+            text-decoration-color: var(--accent); /* 激活态用主题色下划线标记 */
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
+
+        /* ============ 首屏 ============
+           改动理由：原设计为彩色大标题 + 发光动画 + 圆角代码卡片。
+           现改为等宽双栏栅格：左侧品牌 Logo 大字 + 标语 + 行动区，右侧整块黑色代码区。
+           黑块与暖白底的对峙本身就是构图，无需任何装饰 */
+        /* 上留白收紧：消除导航与主体内容之间的大片空档，首屏整体上调 */
+        .hero { padding: clamp(40px, 5vw, 72px) 0 clamp(64px, 8vw, 104px); }
+        .hero-inner {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr)); /* 等宽双栏：文字与代码分量相当 */
+            gap: clamp(40px, 5vw, 72px);
+            align-items: center; /* 左栏内容垂直居中，消除按钮下方的大面积空洞 */
+        }
+        .hero-main { min-width: 0; }
+        .hero-code { min-width: 0; }
+
+        .hero h1 { margin: 0; line-height: 0; /* 标题位改放品牌 Logo，行盒归零避免多余间隙 */ }
+        /* 品牌 Logo 以≈原 9.5rem 标题的字高显示（"logo 和 Vix 字体一样大"）。
+           按栏宽设定宽度，负边距裁掉 logo.png 画布自带留白：
+           鹿 V 左边缘依然对齐栅格，右侧溢出的部分全是画布空白，不会遮挡代码块 */
+        .hero-logo {
+            display: block;
+            width: 112%;
+            margin: -14.5% 0 -16.5% -20%;
+        }
+        .hero h2 {
+            margin: 32px 0 0;
+            font-size: 1.2rem;
+            font-weight: 400; /* 与 800 的标题形成 4 级字重落差，层次全靠对比 */
+            color: var(--ink-soft);
+            line-height: 1.6;
+            max-width: 24em;
+        }
+
+        .hero-actions { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+
+        /* 定位句：Zig 官网同款信息结构——用一句话说明"这是什么、用来做什么"，
+           置于按钮下方填补空白；顶部 1px 规线与上方行动区分组，字色降一档 */
+        .hero-statement {
+            margin: 40px 0 0;
+            padding-top: 24px;
+            border-top: 1px solid var(--ink);
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--ink-soft);
+            max-width: 30em;
+        }
+        .btn {
+            display: inline-block;
+            min-width: 160px; /* 等宽按钮：制造栅格化的秩序感 */
+            padding: 14px 28px;
+            font-size: 0.92rem; font-weight: 600; letter-spacing: 0.03em;
+            text-align: center;
+            border: 1px solid var(--ink);
+            border-radius: 0; /* 直角：瑞士风格拒绝圆角的“亲和力”装饰 */
+            text-decoration: none !important;
+        }
+        .btn:hover { text-decoration: none !important; }
+        .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--paper); } /* 主按钮是主题色最大面积的落点 */
+        .btn-primary:hover { background: transparent; color: var(--accent); } /* 反白即反馈，无需位移和投影 */
+        .btn-secondary { background: transparent; color: var(--ink); }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: transparent; } /* 悬停染上主题橙，而非反黑 */
+
+        /* ============ 代码块 ============
+           直角纯黑块（页面中唯一的大面积黑色元素，与白色页面构成图底关系）。
+           语法高亮保留彩色：关键字用亮橙呼应主题色，其余 token 以蓝/黄/绿/紫/红/青区分——
+           高亮是代码可读性的功能需求，不属于装饰 */
+        .code-sample {
+            background: var(--ink);
+            padding: 28px 32px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;   /* 字号与行高收紧，压缩代码块的过高体态 */
+            line-height: 1.5;
+            text-align: left;
+        }
+        .code-sample::-webkit-scrollbar { display: none; }
+        .code-sample code { font-family: inherit; white-space: pre; }
+        .code-sample > pre { margin: 0; color: #d6d6d1; width: max-content; min-width: 100%; }
+        .code-keyword  { color: #e0995c; } /* 关键字：亮橙，呼应页面主题色 */
+        .code-title    { color: #61afef; } /* 标识符 / 函数名：蓝 */
+        .code-type     { color: #e5c07b; } /* 类型：黄 */
+        .code-string   { color: #98c379; } /* 字符串：绿 */
+        .code-number   { color: #c678dd; } /* 数字：紫 */
+        .code-param    { color: #e06c75; } /* 参数：红 */
+        .code-property { color: #56b6c2; } /* 属性：青 */
+        .code-operator { color: #d6d6d1; }
+        .code-comment  { color: #6b6f76; font-style: italic; } /* 注释：斜体灰 */
+
+        /* ============ 章节 ============
+           改动理由：原设计用暗绿/暗紫底色区分章节（色彩噪音）。
+           现以通栏 1px 分割线 + 大留白为骨架，仅给中段两节一层
+           源自主题色的极浅暖底，让页面出现“暖白—浅橙—暖白—黑”的温度节奏 */
+        .section {
+            padding: clamp(72px, 9vw, 120px) 0;
+            border-top: 1px solid var(--ink);
+            background: var(--paper);
+        }
+        /* 浅橙章节带：大面积、低饱和的暖，是“更温暖”方向的主要落笔 */
+        .section-purple { background: var(--accent-soft); }
+        .section h2 {
+            margin: 0;
+            font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.15;
+            color: var(--ink);
+        }
+        /* 章节标题下的短规线：瑞士排版中的“标尺”元素，用主题橙渲染，
+           是每个章节入口的视觉锚点 */
+        .highlight-bar { width: 48px; height: 2px; background: var(--accent); margin: 24px 0 56px; }
+
+        .build-intro {
+            font-size: 1.02rem;
+            color: var(--ink-soft);
+            max-width: 640px;
+            margin: -24px 0 56px; /* 导语与规线收紧、与卡片组放开，形成呼吸节奏 */
+            line-height: 1.7;
+        }
+
+        /* ============ 卡片组 ============
+           改动理由：原设计为无边框文字卡 + 悬浮上移效果。
+           现改为每张卡片顶部一条 1px 规线的“表格化”网格：
+           细线划定入口，内容左对齐，卡片之间只靠留白分隔 */
+        .why-grid, .build-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: clamp(32px, 4vw, 56px);
+        }
+        .why-card, .build-card { border-top: 1px solid var(--ink); padding-top: 24px; }
+        .why-card:hover, .build-card:hover { border-top-color: var(--accent); } /* 悬停时规线染橙：即时态切换，无过渡动画 */
+        .build-card { display: flex; flex-direction: column; gap: 16px; }
+        .why-card h3, .build-card h3 {
+            margin: 0 0 12px;
+            font-size: 1.05rem;
+            font-weight: 700; /* 标题纯黑加粗，取代原来的橙色标题 */
+            letter-spacing: 0.01em;
+            color: var(--ink);
+        }
+        .why-card p, .build-card p {
+            margin: 0;
+            font-size: 0.93rem;
+            color: var(--ink-soft);
+            line-height: 1.75;
+        }
+        .build-card p { flex-grow: 1; }
+        .build-card .btn-secondary {
+            margin-top: auto; align-self: flex-start;
+            min-width: 0; padding: 10px 22px; font-size: 0.85rem;
+        }
+
+        /* ============ 页脚 ============
+           改动理由：原设计为深灰底页脚。现改为纯黑反白页脚：
+           与首屏代码块首尾呼应，完成页面“白—黑—白—黑”的节奏闭环 */
+        footer { background: var(--ink); color: var(--paper); padding: 80px 0 40px; }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: clamp(40px, 5vw, 64px);
+            margin-bottom: 56px;
+        }
+        .footer-col h4 {
+            margin: 0 0 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.16em; /* 加宽字距的小标签：瑞士式元信息处理 */
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .footer-col ul { list-style: none; margin: 0; padding: 0; }
+        .footer-col li { margin-bottom: 12px; }
+        .footer-col a { color: var(--paper); font-size: 0.9rem; }
+        .social-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+        .social-row a { color: var(--paper); font-size: 0.9rem; }
+        /* 黑底上的悬停用提亮一档的橙，保证对比度 */
+        .footer-col a:hover, .social-row a:hover, .attribution a:hover { color: #f0954e; }
+        .footer-note { margin: 16px 0 0; color: rgba(255, 255, 255, 0.5); font-size: 0.82rem; }
+
+        /* 版权行：由居中改为左对齐（瑞士网格拒绝装饰性居中），
+           上方一条 25% 白的发丝线与内容区分隔 */
+        .attribution {
+            text-align: left;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            padding-top: 28px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .attribution p { margin: 4px 0; }
+        .attribution a { color: rgba(255, 255, 255, 0.75); text-decoration: underline; text-underline-offset: 3px; }
+
+        /* ============ 零动效 ============
+           按要求移除全部动画与过渡：无入场动效、无循环动画、无 hover 位移。
+           .reveal / .hero-line 等类名保留在 HTML 中（作为 site.js 的钩子），
+           但不附带任何视觉效果，页面加载即静止完整呈现 */
+
+        /* ============ 移动端导航 ============
+           改动理由：直角细框取代圆角深色按钮与投影面板，与桌面版同一套语言 */
+        .nav-toggle {
+            display: inline-flex;
+            position: absolute; top: 10px; right: 0; z-index: 2;
+            width: 44px; height: 44px;
+            align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+            border: 1px solid var(--ink);
+            border-radius: 0;
+            background: var(--paper);
+            color: var(--ink);
+            cursor: pointer; padding: 0;
+        }
+        .nav-toggle span { display: block; width: 18px; height: 1.5px; background: currentColor; }
+        nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+        nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+        @media (min-width: 901px) { .nav-toggle { display: none; } }
+
+        @media (max-width: 900px) {
+            .nav-bar { flex-wrap: wrap; padding: 6px 56px 6px 0; min-height: 56px; }
+            .nav-right {
+                display: none;
+                width: 100%;
+                flex-direction: column; align-items: stretch; gap: 0;
+                margin: 10px 0 16px;
+                background: var(--paper);
+                /* 用 1px 发丝网格分隔菜单项，替代原来的圆角格子与投影 */
+                border: 1px solid var(--ink);
+            }
+            nav.nav-open .nav-right { display: flex; }
+            .nav-links {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 1px; /* 间隙透出底色即成分隔线 */
+                background: var(--ink);
+                border-bottom: 1px solid var(--ink);
+            }
+            .nav-links li { background: var(--paper); }
+            .nav-links a { display: block; padding: 14px 16px; font-size: 0.9rem; }
+            .lang-switch { align-self: flex-start; margin: 14px 16px 16px; }
+
+            .hero { padding: 56px 0 64px; }
+            .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+            .hero h2 { font-size: 1.05rem; max-width: none; }
+            .hero-actions { margin-top: 32px; }
+            .btn { min-width: 0; flex: 1 1 140px; }
+            .hero-code .code-sample { max-height: 340px; overflow: auto; }
+            .why-grid, .build-grid, .footer-grid { grid-template-columns: 1fr; }
+            .build-intro { margin-bottom: 48px; }
+            footer { padding: 56px 0 32px; }
+        }
+
+        @media (max-width: 420px) {
+            .nav-links { grid-template-columns: 1fr; }
+        }
+    </style>
     <script src="assets/site.js" defer></script>
 </head>
 <body>
-    <div id="progress-bar"></div>
-    <div class="container">
-        <nav>
-            <a href="index.html" class="brand">
-                <img src="logo.png" alt="Vix Lang Logo">
-            </a>
+    <!-- 结构改动：nav 上移为通栏元素（原嵌套在 container 内），
+         使 1px 底线可以贯穿整个视口宽度，与章节分割线对齐成同一套标尺系统 -->
+    <nav>
+        <div class="container nav-bar">
             <button class="nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-nav-links">
                 <span></span>
                 <span></span>
@@ -31,23 +382,24 @@
                     <li><a href="https://github.com/vixlang/Vix-lang">GitHub</a></li>
                 </ul>
                 <div class="lang-switch">
-                    <button id="btn-zh" type="button" data-lang="zh" class="active" aria-pressed="true">中文</button>
-                    <button id="btn-en" type="button" data-lang="en" aria-pressed="false">EN</button>
+                    <button id="btn-zh" type="button" data-lang="zh" aria-pressed="false">中文</button>
+                    <button id="btn-en" type="button" data-lang="en" class="active" aria-pressed="true">EN</button>
                 </div>
             </div>
-        </nav>
-    </div>
+        </div>
+    </nav>
 
     <div class="container">
         <header class="hero">
             <div class="hero-inner">
                 <div class="hero-main">
-                    <h1 data-i18n="title" class="hero-line hero-line-1">Vix</h1>
+                    <h1 class="hero-line hero-line-1"><img src="logo.png" alt="Vix" class="hero-logo"></h1>
                     <h2 data-i18n="desc" class="hero-line hero-line-2">赋予每个人构建简洁、<br class="dn db-ns">可靠且高效系统软件的能力。</h2>
                     <div class="hero-actions hero-line hero-line-3">
                         <a href="https://github.com/vixlang/Vix-lang/releases" class="btn btn-primary" data-i18n="start">马上开始</a>
                         <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary" data-i18n="src">查看源码</a>
                     </div>
+                    <p class="hero-statement" data-i18n="hero_stmt">Vix 是一门静态类型的编译型语言，用于构建简洁、可靠且高效的系统软件。</p>
                 </div>
                 <div class="hero-code hero-line hero-line-4">
                     <div class="code-sample">
@@ -120,19 +472,19 @@
             </p>
             <div class="build-grid reveal-grid">
                 <div class="build-card">
-                    <h3>算法与数据结构</h3>
-                    <p>用 Vix 的经典语法实现链表、树和排序算法，感受模式匹配带来的清晰逻辑表达。</p>
-                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary">浏览示例</a>
+                    <h3 data-i18n="b1_t">算法与数据结构</h3>
+                    <p data-i18n="b1_d">用 Vix 的经典语法实现链表、树和排序算法，感受模式匹配带来的清晰逻辑表达。</p>
+                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary" data-i18n="b_btn">浏览示例</a>
                 </div>
                 <div class="build-card">
-                    <h3>系统工具</h3>
-                    <p>编写文件处理器、文本分析器或小型 CLI 工具。Vix 的编译速度和高性能运行时让工具开发事半功倍。</p>
-                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary">浏览示例</a>
+                    <h3 data-i18n="b2_t">系统工具</h3>
+                    <p data-i18n="b2_d">编写文件处理器、文本分析器或小型 CLI 工具。Vix 的编译速度和高性能运行时让工具开发事半功倍。</p>
+                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary" data-i18n="b_btn">浏览示例</a>
                 </div>
                 <div class="build-card">
-                    <h3>探索语言特性</h3>
-                    <p>从泛型到指针运算，从结构体到可选类型。示例代码覆盖了 Vix 当前支持的核心特性。</p>
-                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary">浏览示例</a>
+                    <h3 data-i18n="b3_t">探索语言特性</h3>
+                    <p data-i18n="b3_d">从泛型到指针运算，从结构体到可选类型。示例代码覆盖了 Vix 当前支持的核心特性。</p>
+                    <a href="https://github.com/vixlang/Vix-lang/tree/stage0/examples" class="btn btn-secondary" data-i18n="b_btn">浏览示例</a>
                 </div>
             </div>
         </div>
@@ -148,18 +500,18 @@
             </p>
             <div class="build-grid reveal-grid">
                 <div class="build-card">
-                    <h3>VS Code 扩展</h3>
-                    <p>为 VS Code 提供语法高亮、代码补全、错误检查等语言支持，让 Vix 开发体验更顺畅。</p>
-                    <a href="https://github.com/vixlang/ext-VixLangAnalyzer" class="btn btn-secondary" target="_blank">安装扩展</a>
+                    <h3 data-i18n="e1_t">VS Code 扩展</h3>
+                    <p data-i18n="e1_d">为 VS Code 提供语法高亮、代码补全、错误检查等语言支持，让 Vix 开发体验更顺畅。</p>
+                    <a href="https://github.com/vixlang/ext-VixLangAnalyzer" class="btn btn-secondary" target="_blank" data-i18n="e1_btn">安装扩展</a>
                 </div>
                 <div class="build-card">
                     <h3>Verve</h3>
-                    <p>Vix 代码格式化工具，统一团队代码风格。支持一键格式化，可与编辑器深度集成。使用 very build 构建。</p>
-                    <a href="https://github.com/vixlang/vtool-Verve" class="btn btn-secondary" target="_blank">了解 Verve</a>
+                    <p data-i18n="e2_d">Vix 代码格式化工具，统一团队代码风格。支持一键格式化，可与编辑器深度集成。使用 very build 构建。</p>
+                    <a href="https://github.com/vixlang/vtool-Verve" class="btn btn-secondary" target="_blank" data-i18n="e2_btn">了解 Verve</a>
                 </div>
                 <div class="build-card">
                     <h3>Very</h3>
-                    <p>Vix 语言包管理器兼项目管理工具。依赖解决、编译与分发一体，快速创建和管理 Vix 项目。</p>
+                    <p data-i18n="e3_d">Vix 语言包管理器兼项目管理工具。依赖解决、编译与分发一体，快速创建和管理 Vix 项目。</p>
                     <a href="very.html" class="btn btn-secondary" data-i18n="eco_xpm">了解 Very</a>
                 </div>
             </div>
@@ -170,38 +522,44 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h4>获得帮助</h4>
+                    <h4 data-i18n="ft_help">获得帮助</h4>
                     <ul>
-                        <li><a href="/VixDocs/">文档</a></li>
-                        <li><a href="https://github.com/vixlang/Vix-docs">贡献者文档</a></li>
-                        <li><a href="#">在用户论坛提问</a></li>
+                        <li><a href="/VixDocs/" data-i18n="nav_doc">文档</a></li>
+                        <li><a href="https://github.com/vixlang/Vix-docs" data-i18n="ft_contrib">贡献者文档</a></li>
+                        <li><a href="#" data-i18n="ft_forum">在用户论坛提问</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>条款与政策</h4>
+                    <h4 data-i18n="ft_terms">条款与政策</h4>
                     <ul>
-                        <li><a href="#">行为准则</a></li>
-                        <li><a href="https://github.com/vixlang/Vix-lang/blob/stage0/LICENSE">许可证</a></li>
-                        <li><a href="#">安全问题公示</a></li>
+                        <li><a href="#" data-i18n="ft_coc">行为准则</a></li>
+                        <li><a href="https://github.com/vixlang/Vix-lang/blob/stage0/LICENSE" data-i18n="ft_license">许可证</a></li>
+                        <li><a href="#" data-i18n="ft_security">安全问题公示</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>社交</h4>
+                    <h4 data-i18n="ft_social">社交</h4>
                     <div class="social-row">
                         <a href="https://github.com/vixlang" target="_blank">GitHub</a>
                         <a href="mailto:popolk1871@outlook.com">Contact Us</a>
                     </div>
-                    <p class="footer-note">QQ 群: 130577506</p>
+                    <p class="footer-note" data-i18n="ft_qq">QQ 群: 130577506</p>
                 </div>
             </div>
             <div class="attribution">
-                <p>由 Vix Lang 贡献者维护 | MIT 协议</p>
-                <p>发现了错别字？<a href="https://github.com/vixlang/vixlang.github.io/issues">在这里提交修复！</a></p>
+                <p data-i18n="footer_txt">由 Vix Lang 贡献者维护 | MIT 协议</p>
+                <p><span data-i18n="ft_typo">发现了错别字？</span><a href="https://github.com/vixlang/vixlang.github.io/issues" data-i18n="ft_fix">在这里提交修复！</a></p>
             </div>
         </div>
     </footer>
 
     <script>
+        /* 默认语言改为英文：仅当用户从未手动选择过语言时写入 'en'，
+           已保存的语言偏好（localStorage）永远优先。deferred 的 site.js
+           会在 DOMContentLoaded 时读取该值并自动切换为英文文案 */
+        if (!localStorage.getItem('vix-lang')) {
+            localStorage.setItem('vix-lang', 'en');
+        }
         const translations = {
             zh: {
                 nav_home: "首页", nav_doc: "文档",
@@ -217,7 +575,20 @@
                 code_comment: "// [在此处插入实际的 Vix 代码示例]",
                 eco_title: "加入生态系统", eco_desc: "依靠 Very 包管理器、Verve 格式化工具和 VS Code 扩展，Vix 拥有日渐完善的工具链。",
                 nav_vep: "VEP", eco_xpm: "了解 Very", eco_doc: "阅读文档",
-                footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议"
+                footer_txt: "由 VIx Lang 贡献者维护 | MIT 协议",
+                /* 以下键补齐原先缺少 data-i18n 的卡片与页脚文案，使英文模式完整生效 */
+                b1_t: "算法与数据结构", b1_d: "用 Vix 的经典语法实现链表、树和排序算法，感受模式匹配带来的清晰逻辑表达。",
+                b2_t: "系统工具", b2_d: "编写文件处理器、文本分析器或小型 CLI 工具。Vix 的编译速度和高性能运行时让工具开发事半功倍。",
+                b3_t: "探索语言特性", b3_d: "从泛型到指针运算，从结构体到可选类型。示例代码覆盖了 Vix 当前支持的核心特性。",
+                b_btn: "浏览示例",
+                e1_t: "VS Code 扩展", e1_d: "为 VS Code 提供语法高亮、代码补全、错误检查等语言支持，让 Vix 开发体验更顺畅。", e1_btn: "安装扩展",
+                e2_d: "Vix 代码格式化工具，统一团队代码风格。支持一键格式化，可与编辑器深度集成。使用 very build 构建。", e2_btn: "了解 Verve",
+                e3_d: "Vix 语言包管理器兼项目管理工具。依赖解决、编译与分发一体，快速创建和管理 Vix 项目。",
+                ft_help: "获得帮助", ft_contrib: "贡献者文档", ft_forum: "在用户论坛提问",
+                ft_terms: "条款与政策", ft_coc: "行为准则", ft_license: "许可证", ft_security: "安全问题公示",
+                ft_social: "社交", ft_qq: "QQ 群: 130577506",
+                ft_typo: "发现了错别字？", ft_fix: "在这里提交修复！",
+                hero_stmt: "Vix 是一门静态类型的编译型语言，用于构建简洁、可靠且高效的系统软件。"
             },
             en: {
                 nav_home: "Home", nav_doc: "Docs",
@@ -233,11 +604,22 @@
                 code_comment: "// [Insert your VIx code example here]",
                 eco_title: "Join the Ecosystem", eco_desc: "Vix is growing with a powerful toolchain: the Very package manager, Verve formatter, and VS Code extension.",
                 nav_vep: "VEP", eco_xpm: "Discover Very", eco_doc: "Read the Docs",
-                footer_txt: "Maintained by VIx Lang Contributors | MIT License"
+                footer_txt: "Maintained by VIx Lang Contributors | MIT License",
+                /* New keys covering the cards and footer text that previously had no data-i18n hooks */
+                b1_t: "Algorithms & Data Structures", b1_d: "Implement linked lists, trees, and sorting algorithms with Vix's classic syntax, and feel the clarity that pattern matching brings to logic.",
+                b2_t: "System Tools", b2_d: "Write file processors, text analyzers, or small CLI tools. Vix's compile speed and high-performance runtime make tool development far more productive.",
+                b3_t: "Explore Language Features", b3_d: "From generics to pointer arithmetic, from structs to optional types. The examples cover the core features Vix currently supports.",
+                b_btn: "Browse Examples",
+                e1_t: "VS Code Extension", e1_d: "Provides syntax highlighting, code completion, error checking, and other language support for VS Code, making Vix development smoother.", e1_btn: "Install Extension",
+                e2_d: "Vix's code formatter that unifies team code style. One-click formatting with deep editor integration. Built with very build.", e2_btn: "Discover Verve",
+                e3_d: "Vix's package manager and project management tool. Dependency resolution, compilation, and distribution in one — quickly create and manage Vix projects.",
+                ft_help: "Get Help", ft_contrib: "Contributor Docs", ft_forum: "Ask on the User Forum",
+                ft_terms: "Terms & Policies", ft_coc: "Code of Conduct", ft_license: "License", ft_security: "Security Disclosure",
+                ft_social: "Social", ft_qq: "QQ Group: 130577506",
+                ft_typo: "Found a typo? ", ft_fix: "Submit a fix here!",
+                hero_stmt: "Vix is a statically-typed, compiled programming language for building simple, reliable, and efficient systems software."
             }
         };
     </script>
 </body>
 </html>
-
-
