@@ -1,0 +1,22 @@
+# 强制 LF 行尾：脚本类文件若被 git 转成 CRLF，
+# 在 Linux/macOS 上 `curl | sh` 会报 $'\r': command not found
+* text=auto
+
+# 必须保持 LF 的文件
+*.sh        text eol=lf
+install.sh  text eol=lf
+*.bash      text eol=lf
+
+# Windows 专用脚本保持 CRLF
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# 二进制资源，不做行尾转换
+*.png       binary
+*.ico       binary
+*.ttf       binary
+*.woff      binary
+*.woff2     binary
+*.zip       binary
+*.tar.gz    binary
