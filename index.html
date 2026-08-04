@@ -27,9 +27,8 @@
 
         /* ============================================================
            设计总则（瑞士国际主义 / Swiss International Style）
-           1. 色彩：墨黑 #111 + 暖白 #fdfbf7 + 鲜明的焦橙主题色 #c2410c。
-              主题色用于：章节规线、主按钮、导航与链接的悬停/激活态、
-              卡片规线悬停、浅橙章节带、文本选区、键盘焦点框。
+           1. 色彩：灰色骨架 + 橙色灵魂。冷灰系（#1c1917 → #f5f5f4）
+              建立全站层次，亮橙 #ea580c 作为唯一强调色贯穿交互。
            2. 零装饰、零动效：无图标、无插画、无圆角、无阴影、无渐变、
               无毛玻璃；全站无任何动画与过渡特效，唯一的图形元素是 1px 分割线。
            3. 视觉层次完全由字重（400/500/700/800）、字号阶梯、
@@ -38,13 +37,17 @@
            5. 例外：代码示例保留彩色语法高亮（可读性的功能需求，非装饰）。
            ============================================================ */
         :root {
-            --ink: #111111;           /* 主墨色：近纯黑，承担全部强调 */
-            --ink-soft: #4c4c49;      /* 次级文字：黑的灰阶延展 */
-            --ink-faint: #8f8f8a;     /* 三级文字：更浅灰阶，用于元信息 */
-            --paper: #fdfbf7;         /* 暖白纸面：比纯白多一丝温度 */
-            --accent: #c2410c;        /* 主题色：焦橙，鲜明但不荧光 */
-            --accent-tint: #fceadb;   /* 主题色的浅底变体，仅用于文本选区 */
-            --accent-soft: #faf1e7;   /* 主题色的章节带底色：大面积、低存在感的暖 */
+            --ink: #1c1917;           /* 主墨色：近黑暖灰，比纯黑柔和 */
+            --ink-soft: #57534e;      /* 次级文字：中暖灰 */
+            --ink-faint: #a8a29e;     /* 三级文字：浅暖灰，用于元信息 */
+            --paper: #f5f5f4;         /* 纸面：浅灰，比纯白更有质感 */
+            --paper-alt: #ffffff;     /* 浮层白：卡片/区块用纯白提亮 */
+            --border: #d6d3d1;        /* 发丝线：浅灰边框 */
+            --accent: #ea580c;        /* 主题色：亮橙，鲜明且现代 */
+            --accent-hover: #c2410c;  /* 悬停加深 */
+            --accent-tint: #fed7aa;   /* 浅橙：选区/标签底色 */
+            --accent-soft: #fff7ed;   /* 极浅橙：章节带底色 */
+            --code-bg: #1c1917;       /* 代码块背景：深灰黑 */
             --font-sans: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
             --font-mono: "Maple Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
         }
@@ -79,7 +82,8 @@
         /* ============ 导航 ============
            改动理由：原设计为深色底上的彩色文字导航。
            现改为通栏 1px 底线划出的白色导航带，层级靠字号与留白区分 */
-        nav { border-bottom: 1px solid var(--ink); position: relative; }
+        /* 导航底线：浅灰发丝线，比黑色更克制 */
+        nav { border-bottom: 1px solid var(--border); position: relative; }
         .nav-bar {
             display: flex; align-items: center; justify-content: space-between;
             min-height: 64px; gap: 32px;
@@ -97,13 +101,13 @@
         .nav-links a:hover, .nav-links a.active {
             color: var(--accent);
             text-decoration: underline; text-decoration-color: var(--accent);
-            text-underline-offset: 6px; text-decoration-thickness: 1px;
+            text-underline-offset: 6px; text-decoration-thickness: 2px;
         }
 
         /* 语言切换：去掉深色胶囊底，改为细框矩形（直角），激活态用点缀色下划线标记 */
         .lang-switch {
             display: flex; gap: 12px;
-            border: 1px solid var(--ink);
+            border: 1px solid var(--border);
             padding: 4px 12px;
             font-size: 0.8rem; font-weight: 600;
         }
@@ -155,12 +159,38 @@
 
         .hero-actions { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
 
+        /* 安装命令栏：黑底直角的终端式区块，与右侧代码块同语言；
+           用户可直接选中复制 curl 命令 */
+        .hero-install {
+            margin-top: 24px;
+            background: var(--code-bg);
+            padding: 14px 20px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #d6d6d1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .hero-install::-webkit-scrollbar { display: none; }
+        .hero-install .prompt { color: var(--accent); font-weight: 700; flex-shrink: 0; } /* $ 提示符用主题橙 */
+        .hero-install .cmd { color: #e8e8e4; white-space: nowrap; }
+        .hero-install .label {
+            font-family: var(--font-sans);
+            font-size: 0.72rem; letter-spacing: 0.06em;
+            color: rgba(255,255,255,0.4);
+            flex-shrink: 0; margin-left: auto;
+        }
+
         /* 定位句：Zig 官网同款信息结构——用一句话说明"这是什么、用来做什么"，
            置于按钮下方填补空白；顶部 1px 规线与上方行动区分组，字色降一档 */
         .hero-statement {
             margin: 40px 0 0;
             padding-top: 24px;
-            border-top: 1px solid var(--ink);
+            border-top: 1px solid var(--border);
             font-size: 1rem;
             line-height: 1.7;
             color: var(--ink-soft);
@@ -168,26 +198,26 @@
         }
         .btn {
             display: inline-block;
-            min-width: 160px; /* 等宽按钮：制造栅格化的秩序感 */
+            min-width: 160px;
             padding: 14px 28px;
             font-size: 0.92rem; font-weight: 600; letter-spacing: 0.03em;
             text-align: center;
             border: 1px solid var(--ink);
-            border-radius: 0; /* 直角：瑞士风格拒绝圆角的“亲和力”装饰 */
+            border-radius: 0;
             text-decoration: none !important;
         }
         .btn:hover { text-decoration: none !important; }
-        .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--paper); } /* 主按钮是主题色最大面积的落点 */
-        .btn-primary:hover { background: transparent; color: var(--accent); } /* 反白即反馈，无需位移和投影 */
+        .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
         .btn-secondary { background: transparent; color: var(--ink); }
-        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: transparent; } /* 悬停染上主题橙，而非反黑 */
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: transparent; }
 
         /* ============ 代码块 ============
            直角纯黑块（页面中唯一的大面积黑色元素，与白色页面构成图底关系）。
            语法高亮保留彩色：关键字用亮橙呼应主题色，其余 token 以蓝/黄/绿/紫/红/青区分——
            高亮是代码可读性的功能需求，不属于装饰 */
         .code-sample {
-            background: var(--ink);
+            background: var(--code-bg);
             padding: 28px 32px;
             overflow-x: auto;
             scrollbar-width: none;
@@ -197,9 +227,9 @@
             text-align: left;
         }
         .code-sample::-webkit-scrollbar { display: none; }
-        .code-sample code { font-family: inherit; white-space: pre; }
-        .code-sample > pre { margin: 0; color: #d6d6d1; width: max-content; min-width: 100%; }
-        .code-keyword  { color: #e0995c; } /* 关键字：亮橙，呼应页面主题色 */
+        .code-sample > pre { margin: 0; color: #d6d6d1; width: max-content; min-width: 100%; font-family: var(--font-mono); } /* 显式声明：覆盖 <pre> 的 UA 默认 monospace */
+        .code-sample code { font-family: var(--font-mono); white-space: pre; } /* 同上，覆盖 <code> 的 UA 默认 */
+        .code-keyword  { color: #fb923c; } /* 关键字：亮橙，呼应主题色 */
         .code-title    { color: #61afef; } /* 标识符 / 函数名：蓝 */
         .code-type     { color: #e5c07b; } /* 类型：黄 */
         .code-string   { color: #98c379; } /* 字符串：绿 */
@@ -215,7 +245,7 @@
            源自主题色的极浅暖底，让页面出现“暖白—浅橙—暖白—黑”的温度节奏 */
         .section {
             padding: clamp(72px, 9vw, 120px) 0;
-            border-top: 1px solid var(--ink);
+            border-top: 1px solid var(--border);
             background: var(--paper);
         }
         /* 浅橙章节带：大面积、低饱和的暖，是“更温暖”方向的主要落笔 */
@@ -228,9 +258,8 @@
             line-height: 1.15;
             color: var(--ink);
         }
-        /* 章节标题下的短规线：瑞士排版中的“标尺”元素，用主题橙渲染，
-           是每个章节入口的视觉锚点 */
-        .highlight-bar { width: 48px; height: 2px; background: var(--accent); margin: 24px 0 56px; }
+        /* 章节标题下的短规线：用主题橙渲染，是每个章节入口的视觉锚点 */
+        .highlight-bar { width: 48px; height: 3px; background: var(--accent); margin: 24px 0 56px; }
 
         .build-intro {
             font-size: 1.02rem;
@@ -341,18 +370,17 @@
                 flex-direction: column; align-items: stretch; gap: 0;
                 margin: 10px 0 16px;
                 background: var(--paper);
-                /* 用 1px 发丝网格分隔菜单项，替代原来的圆角格子与投影 */
-                border: 1px solid var(--ink);
+                border: 1px solid var(--border);
             }
             nav.nav-open .nav-right { display: flex; }
             .nav-links {
                 display: grid;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 1px; /* 间隙透出底色即成分隔线 */
-                background: var(--ink);
-                border-bottom: 1px solid var(--ink);
+                gap: 1px;
+                background: var(--border);
+                border-bottom: 1px solid var(--border);
             }
-            .nav-links li { background: var(--paper); }
+            .nav-links li { background: var(--paper-alt); }
             .nav-links a { display: block; padding: 14px 16px; font-size: 0.9rem; }
             .lang-switch { align-self: flex-start; margin: 14px 16px 16px; }
 
@@ -409,6 +437,11 @@
                     <div class="hero-actions hero-line hero-line-3">
                         <a href="https://github.com/vixlang/Vix-lang/releases" class="btn btn-primary" data-i18n="start">马上开始</a>
                         <a href="https://github.com/vixlang/Vix-lang" class="btn btn-secondary" data-i18n="src">查看源码</a>
+                    </div>
+                    <div class="hero-install">
+                        <span class="prompt">$</span>
+                        <span class="cmd">curl -fsSL https://vix-lang.org/install.sh | sh</span>
+                        <span class="label" data-i18n="install_label">一键安装</span>
                     </div>
                     <p class="hero-statement" data-i18n="hero_stmt">Vix 是一门静态类型的编译型语言，用于构建简洁、可靠且高效的系统软件。</p>
                 </div>
@@ -599,7 +632,8 @@
                 ft_terms: "条款与政策", ft_coc: "行为准则", ft_license: "许可证", ft_security: "安全问题公示",
                 ft_social: "社交", ft_qq: "QQ 群: 130577506",
                 ft_typo: "发现了错别字？", ft_fix: "在这里提交修复！",
-                hero_stmt: "Vix 是一门静态类型的编译型语言，用于构建简洁、可靠且高效的系统软件。"
+                hero_stmt: "Vix 是一门静态类型的编译型语言，用于构建简洁、可靠且高效的系统软件。",
+                install_label: "一键安装"
             },
             en: {
                 nav_home: "Home", nav_doc: "Docs",
@@ -628,7 +662,8 @@
                 ft_terms: "Terms & Policies", ft_coc: "Code of Conduct", ft_license: "License", ft_security: "Security Disclosure",
                 ft_social: "Social", ft_qq: "QQ Group: 130577506",
                 ft_typo: "Found a typo? ", ft_fix: "Submit a fix here!",
-                hero_stmt: "Vix is a statically-typed, compiled programming language for building simple, reliable, and efficient systems software."
+                hero_stmt: "Vix is a statically-typed, compiled programming language for building simple, reliable, and efficient systems software.",
+                install_label: "Quick Install"
             }
         };
     </script>
