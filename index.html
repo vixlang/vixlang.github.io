@@ -88,10 +88,18 @@
             display: flex; align-items: center; justify-content: space-between;
             min-height: 64px; gap: 32px;
         }
+        /* 导航品牌文字：logo 删除后用纯文字锚定品牌，橙色点呼应主题 */
+        .nav-brand {
+            font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;
+            color: var(--ink); text-decoration: none;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .nav-brand::after { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--accent); }
+        .nav-brand:hover { text-decoration: none; color: var(--ink); }
         /* 导航 Logo 已删除：首屏大图即品牌，导航不再重复。
            链接整体移到左侧（与内容栅格齐平），语言切换保留在最右 */
         .nav-right { display: flex; align-items: center; gap: 32px; width: 100%; justify-content: space-between; }
-        .nav-links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
+        .nav-links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; align-items: center; }
         .nav-links a {
             color: var(--ink);
             font-size: 0.85rem;      /* 小字号 + 加宽字距 = 瑞士式导航标签 */
@@ -218,8 +226,8 @@
            高亮是代码可读性的功能需求，不属于装饰 */
         .code-sample {
             background: var(--code-bg);
-            padding: 28px 32px;
-            overflow-x: auto;
+            padding: 0;
+            overflow: hidden;
             scrollbar-width: none;
             font-family: var(--font-mono);
             font-size: 0.8rem;   /* 字号与行高收紧，压缩代码块的过高体态 */
@@ -227,8 +235,21 @@
             text-align: left;
         }
         .code-sample::-webkit-scrollbar { display: none; }
-        .code-sample > pre { margin: 0; color: #d6d6d1; width: max-content; min-width: 100%; font-family: var(--font-mono); } /* 显式声明：覆盖 <pre> 的 UA 默认 monospace */
-        .code-sample code { font-family: var(--font-mono); white-space: pre; } /* 同上，覆盖 <code> 的 UA 默认 */
+        .code-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 20px;
+            background: #292524;
+            border-bottom: 1px solid #44403c;
+            font-family: var(--font-sans);
+            font-size: 0.72rem; letter-spacing: 0.04em;
+            color: #a8a29e;
+        }
+        .code-header .dot { width: 6px; height: 6px; background: var(--accent); flex-shrink: 0; }
+        .code-header .filename { font-weight: 600; color: #d6d3d1; }
+        .code-body { padding: 24px 28px; overflow-x: auto; scrollbar-width: none; }
+        .code-body::-webkit-scrollbar { display: none; }
+        .code-body > pre { margin: 0; color: #d6d6d1; width: max-content; min-width: 100%; font-family: var(--font-mono); }
+        .code-body code { font-family: var(--font-mono); white-space: pre; }
         .code-keyword  { color: #fb923c; } /* 关键字：亮橙，呼应主题色 */
         .code-title    { color: #61afef; } /* 标识符 / 函数名：蓝 */
         .code-type     { color: #e5c07b; } /* 类型：黄 */
@@ -257,6 +278,13 @@
             letter-spacing: -0.025em;
             line-height: 1.15;
             color: var(--ink);
+            display: flex; align-items: baseline; gap: 16px;
+        }
+        .section h2 .num {
+            font-size: 0.85rem; font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            font-family: var(--font-mono);
         }
         /* 章节标题下的短规线：用主题橙渲染，是每个章节入口的视觉锚点 */
         .highlight-bar { width: 48px; height: 3px; background: var(--accent); margin: 24px 0 56px; }
@@ -278,8 +306,15 @@
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: clamp(32px, 4vw, 56px);
         }
-        .why-card, .build-card { border-top: 1px solid var(--ink); padding-top: 24px; }
-        .why-card:hover, .build-card:hover { border-top-color: var(--accent); } /* 悬停时规线染橙：即时态切换，无过渡动画 */
+        .why-card, .build-card { border-top: 1px solid var(--border); padding-top: 24px; position: relative; }
+        .why-card:hover, .build-card:hover { border-top-color: var(--accent); }
+        .card-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem; font-weight: 700;
+            color: var(--ink-faint);
+            letter-spacing: 0.06em;
+            margin-bottom: 8px; display: block;
+        }
         .build-card { display: flex; flex-direction: column; gap: 16px; }
         .why-card h3, .build-card h3 {
             margin: 0 0 12px;
@@ -323,7 +358,7 @@
         .social-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
         .social-row a { color: var(--paper); font-size: 0.9rem; }
         /* 黑底上的悬停用提亮一档的橙，保证对比度 */
-        .footer-col a:hover, .social-row a:hover, .attribution a:hover { color: #f0954e; }
+        .footer-col a:hover, .social-row a:hover, .attribution a:hover { color: var(--accent); }
         .footer-note { margin: 16px 0 0; color: rgba(255, 255, 255, 0.5); font-size: 0.82rem; }
 
         /* 版权行：由居中改为左对齐（瑞士网格拒绝装饰性居中），
@@ -389,7 +424,7 @@
             .hero h2 { font-size: 1.05rem; max-width: none; }
             .hero-actions { margin-top: 32px; }
             .btn { min-width: 0; flex: 1 1 140px; }
-            .hero-code .code-sample { max-height: 340px; overflow: auto; }
+            .hero-code .code-body { max-height: 340px; overflow: auto; }
             .why-grid, .build-grid, .footer-grid { grid-template-columns: 1fr; }
             .build-intro { margin-bottom: 48px; }
             footer { padding: 56px 0 32px; }
@@ -406,6 +441,7 @@
          使 1px 底线可以贯穿整个视口宽度，与章节分割线对齐成同一套标尺系统 -->
     <nav>
         <div class="container nav-bar">
+            <a href="index.html" class="nav-brand">Vix</a>
             <button class="nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-nav-links">
                 <span></span>
                 <span></span>
@@ -414,7 +450,7 @@
             <div class="nav-right" id="site-nav-links">
                 <ul class="nav-links">
                     <li><a href="index.html" class="active" data-i18n="nav_home">首页</a></li>
-                    <li><a href="/VixDocs/" data-i18n="nav_doc">文档</a></li>
+                    <li><a href="https://github.com/vixlang/LearnVix" data-i18n="nav_doc">文档</a></li>
                     <li><a href="very.html">Very</a></li>
                     <li><a href="playground/" data-i18n="nav_playground">Playground</a></li>
                     <li><a href="https://vixlang.github.io/VEP/">VEP</a></li>
@@ -447,6 +483,8 @@
                 </div>
                 <div class="hero-code hero-line hero-line-4">
                     <div class="code-sample">
+                        <div class="code-header"><span class="dot"></span><span class="filename">hello.vix</span></div>
+                        <div class="code-body">
 <pre id="panel-0"><code><span class="code-keyword">import</span> <span class="code-title">string</span>
 <span class="code-keyword">import</span> <span class="code-title">file</span>
 <span class="code-keyword">type</span> <span class="code-title">Result</span>:[<span class="code-type">T</span>, <span class="code-type">E</span>] = <span class="code-title">Ok</span>(<span class="code-type">T</span>) | <span class="code-title">Err</span>(<span class="code-type">E</span>)
@@ -480,6 +518,7 @@
 
     <span class="code-keyword">return</span> <span class="code-number">0</span>
 }</code></pre>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -488,18 +527,21 @@
 
     <section class="section section-green reveal">
         <div class="container">
-            <h2 data-i18n="why_title">为什么选择 Vix?</h2>
+            <h2 data-i18n="why_title"><span class="num">01</span>为什么选择 Vix?</h2>
             <div class="highlight-bar"></div>
             <div class="why-grid reveal-grid">
                 <div class="why-card">
+                    <span class="card-num">01</span>
                     <h3 data-i18n="f1_t">编译即优化</h3>
                     <p data-i18n="f1_d">基于 LLVM 后端，Vix 在编译期完成大量优化。没有沉重的运行时负担，生成的二进制文件精简高效，启动速度毫秒级。</p>
                 </div>
                 <div class="why-card">
+                    <span class="card-num">02</span>
                     <h3 data-i18n="f2_t">模式匹配与 ADT</h3>
                     <p data-i18n="f2_d">原生支持代数数据类型和强大的 match 表达式，让状态处理变得直观且穷尽。编译器会提醒你漏掉的每一种情况，而不是在运行时崩溃。</p>
                 </div>
                 <div class="why-card">
+                    <span class="card-num">03</span>
                     <h3 data-i18n="f3_t">可控的底层能力</h3>
                     <p data-i18n="f3_d">需要操作原始内存？Vix 提供指针运算和手动内存管理的能力。不需要时，现代化的语法和类型系统帮你远离段错误。</p>
                 </div>
@@ -509,7 +551,7 @@
 
     <section class="section section-purple reveal">
         <div class="container">
-            <h2 data-i18n="build_title">用 Vix 构建应用</h2>
+            <h2 data-i18n="build_title"><span class="num">02</span>用 Vix 构建应用</h2>
             <div class="highlight-bar"></div>
             <p class="build-intro" data-i18n="build_desc">
                 Vix 目前处于积极开发阶段，核心语法和类型系统已经可用。以下是一些你可以尝试的方向，更多示例请参考官方仓库。
@@ -537,7 +579,7 @@
     <!-- 生态系统 -->
     <section class="section section-purple reveal">
         <div class="container">
-            <h2 data-i18n="eco_title">加入生态系统</h2>
+            <h2 data-i18n="eco_title"><span class="num">03</span>加入生态系统</h2>
             <div class="highlight-bar"></div>
             <p class="build-intro" data-i18n="eco_desc">
                 依靠 Very 包管理器、Verve 格式化工具和 VS Code 扩展，Vix 拥有日渐完善的工具链。
@@ -568,7 +610,7 @@
                 <div class="footer-col">
                     <h4 data-i18n="ft_help">获得帮助</h4>
                     <ul>
-                        <li><a href="/VixDocs/" data-i18n="nav_doc">文档</a></li>
+                        <li><a href="https://github.com/vixlang/LearnVix" data-i18n="nav_doc">文档</a></li>
                         <li><a href="https://github.com/vixlang/Vix-docs" data-i18n="ft_contrib">贡献者文档</a></li>
                         <li><a href="#" data-i18n="ft_forum">在用户论坛提问</a></li>
                     </ul>
