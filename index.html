@@ -48,6 +48,10 @@
             --accent-tint: #fed7aa;   /* 浅橙：选区/标签底色 */
             --accent-soft: #fff7ed;   /* 极浅橙：章节带底色 */
             --code-bg: #1c1917;       /* 代码块背景：深灰黑 */
+            --footer-bg: #1c1917;     /* 页脚背景：深灰黑，与代码块首尾呼应 */
+            --footer-text: #f5f5f4;   /* 页脚文字：浅灰白 */
+            --footer-muted: rgba(255,255,255,0.5); /* 页脚次要文字 */
+            --footer-border: rgba(255,255,255,0.25); /* 页脚分割线 */
             --font-sans: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
             --font-mono: "Maple Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
         }
@@ -192,6 +196,13 @@
             color: rgba(255,255,255,0.4);
             flex-shrink: 0; margin-left: auto;
         }
+        .hero-install .copy-btn {
+            appearance: none; border: 1px solid rgba(255,255,255,0.2); background: transparent;
+            color: rgba(255,255,255,0.5); cursor: pointer;
+            font-family: var(--font-sans); font-size: 0.68rem; font-weight: 600;
+            padding: 3px 8px; letter-spacing: 0.04em; flex-shrink: 0;
+        }
+        .hero-install .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
 
         /* 定位句：Zig 官网同款信息结构——用一句话说明"这是什么、用来做什么"，
            置于按钮下方填补空白；顶部 1px 规线与上方行动区分组，字色降一档 */
@@ -246,10 +257,19 @@
         }
         .code-header .dot { width: 6px; height: 6px; background: var(--accent); flex-shrink: 0; }
         .code-header .filename { font-weight: 600; color: #d6d3d1; }
-        .code-body { padding: 24px 28px; overflow-x: auto; scrollbar-width: none; }
+        .code-body { padding: 24px 0; overflow-x: auto; scrollbar-width: none; }
         .code-body::-webkit-scrollbar { display: none; }
         .code-body > pre { margin: 0; color: #d6d6d1; width: max-content; min-width: 100%; font-family: var(--font-mono); }
-        .code-body code { font-family: var(--font-mono); white-space: pre; }
+        .code-body code { font-family: var(--font-mono); white-space: pre; counter-reset: line; }
+        /* 行号：JS 将每行包裹为 .code-line，CSS counter 自动编号 */
+        .code-line { counter-increment: line; display: block; }
+        .code-line::before {
+            content: counter(line);
+            display: inline-block; width: 2.5em; text-align: right;
+            margin-right: 1.5em; padding-left: 1em;
+            color: #57534e; user-select: none; font-weight: 400;
+            border-right: 1px solid #44403c;
+        }
         .code-keyword  { color: #fb923c; } /* 关键字：亮橙，呼应主题色 */
         .code-title    { color: #61afef; } /* 标识符 / 函数名：蓝 */
         .code-type     { color: #e5c07b; } /* 类型：黄 */
@@ -286,6 +306,15 @@
             letter-spacing: 0.08em;
             font-family: var(--font-mono);
         }
+        /* 章节眉标：大写小字 + 加宽字距，瑞士式分区标签 */
+        .section-eyebrow {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--ink-faint);
+            margin-bottom: 12px;
+        }
         /* 章节标题下的短规线：用主题橙渲染，是每个章节入口的视觉锚点 */
         .highlight-bar { width: 48px; height: 3px; background: var(--accent); margin: 24px 0 56px; }
 
@@ -306,8 +335,8 @@
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: clamp(32px, 4vw, 56px);
         }
-        .why-card, .build-card { border-top: 1px solid var(--border); padding-top: 24px; position: relative; }
-        .why-card:hover, .build-card:hover { border-top-color: var(--accent); }
+        .why-card, .build-card { border-top: 1px solid var(--border); padding-top: 24px; position: relative; padding-left: 16px; padding-bottom: 8px; margin-left: -16px; }
+        .why-card:hover, .build-card:hover { border-top-color: var(--accent); background: rgba(234, 88, 12, 0.03); }
         .card-num {
             font-family: var(--font-mono);
             font-size: 0.72rem; font-weight: 700;
@@ -338,7 +367,14 @@
         /* ============ 页脚 ============
            改动理由：原设计为深灰底页脚。现改为纯黑反白页脚：
            与首屏代码块首尾呼应，完成页面“白—黑—白—黑”的节奏闭环 */
-        footer { background: var(--ink); color: var(--paper); padding: 80px 0 40px; }
+        footer { background: var(--footer-bg); color: var(--footer-text); padding: 80px 0 40px; }
+        /* 页脚大字品牌标：超大字号 + 极粗字重，作为页脚的视觉锚点 */
+        .footer-brand {
+            font-size: clamp(4rem, 10vw, 7rem);
+            font-weight: 800; letter-spacing: -0.04em;
+            line-height: 0.9; color: var(--footer-text);
+            opacity: 0.08; margin-bottom: 48px;
+        }
         .footer-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -350,28 +386,28 @@
             font-size: 0.72rem;
             font-weight: 600;
             letter-spacing: 0.16em; /* 加宽字距的小标签：瑞士式元信息处理 */
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--footer-muted);
         }
         .footer-col ul { list-style: none; margin: 0; padding: 0; }
         .footer-col li { margin-bottom: 12px; }
-        .footer-col a { color: var(--paper); font-size: 0.9rem; }
+        .footer-col a { color: var(--footer-text); font-size: 0.9rem; }
         .social-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-        .social-row a { color: var(--paper); font-size: 0.9rem; }
+        .social-row a { color: var(--footer-text); font-size: 0.9rem; }
         /* 黑底上的悬停用提亮一档的橙，保证对比度 */
         .footer-col a:hover, .social-row a:hover, .attribution a:hover { color: var(--accent); }
-        .footer-note { margin: 16px 0 0; color: rgba(255, 255, 255, 0.5); font-size: 0.82rem; }
+        .footer-note { margin: 16px 0 0; color: var(--footer-muted); font-size: 0.82rem; }
 
         /* 版权行：由居中改为左对齐（瑞士网格拒绝装饰性居中），
            上方一条 25% 白的发丝线与内容区分隔 */
         .attribution {
             text-align: left;
-            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            border-top: 1px solid var(--footer-border);
             padding-top: 28px;
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--footer-muted);
         }
         .attribution p { margin: 4px 0; }
-        .attribution a { color: rgba(255, 255, 255, 0.75); text-decoration: underline; text-underline-offset: 3px; }
+        .attribution a { color: var(--footer-text); opacity: 0.75; text-decoration: underline; text-underline-offset: 3px; }
 
         /* ============ 零动效 ============
            按要求移除全部动画与过渡：无入场动效、无循环动画、无 hover 位移。
@@ -478,6 +514,7 @@
                         <span class="prompt">$</span>
                         <span class="cmd">curl -fsSL https://vix-lang.org/install.sh | sh</span>
                         <span class="label" data-i18n="install_label">一键安装</span>
+                        <button class="copy-btn" type="button" data-cmd="curl -fsSL https://vix-lang.org/install.sh | sh">Copy</button>
                     </div>
                     <p class="hero-statement" data-i18n="hero_stmt">Vix 是一门静态类型的编译型语言，用于构建简洁、可靠且高效的系统软件。</p>
                 </div>
@@ -527,6 +564,7 @@
 
     <section class="section section-green reveal">
         <div class="container">
+            <span class="section-eyebrow">Features</span>
             <h2 data-i18n="why_title"><span class="num">01</span>为什么选择 Vix?</h2>
             <div class="highlight-bar"></div>
             <div class="why-grid reveal-grid">
@@ -551,6 +589,7 @@
 
     <section class="section section-purple reveal">
         <div class="container">
+            <span class="section-eyebrow">Build</span>
             <h2 data-i18n="build_title"><span class="num">02</span>用 Vix 构建应用</h2>
             <div class="highlight-bar"></div>
             <p class="build-intro" data-i18n="build_desc">
@@ -579,6 +618,7 @@
     <!-- 生态系统 -->
     <section class="section section-purple reveal">
         <div class="container">
+            <span class="section-eyebrow">Ecosystem</span>
             <h2 data-i18n="eco_title"><span class="num">03</span>加入生态系统</h2>
             <div class="highlight-bar"></div>
             <p class="build-intro" data-i18n="eco_desc">
@@ -606,13 +646,14 @@
 
     <footer class="reveal">
         <div class="container">
+            <div class="footer-brand">Vix</div>
             <div class="footer-grid">
                 <div class="footer-col">
                     <h4 data-i18n="ft_help">获得帮助</h4>
                     <ul>
                         <li><a href="https://github.com/vixlang/LearnVix" data-i18n="nav_doc">文档</a></li>
                         <li><a href="https://github.com/vixlang/Vix-docs" data-i18n="ft_contrib">贡献者文档</a></li>
-                        <li><a href="#" data-i18n="ft_forum">在用户论坛提问</a></li>
+                        <li><a href="https://forum.vix-lang.org" target="_blank" rel="noopener" data-i18n="ft_forum">在用户论坛提问</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -646,6 +687,36 @@
         if (!localStorage.getItem('vix-lang')) {
             localStorage.setItem('vix-lang', 'en');
         }
+
+        /* 代码块行号：将 <code> 内容按 \n 拆分，每行包裹为 .code-line */
+        document.addEventListener('DOMContentLoaded', function() {
+            var code = document.querySelector('.code-body code');
+            if (!code) return;
+            var html = code.innerHTML;
+            var lines = html.split('\n');
+            var wrapped = lines.map(function(line) {
+                return '<span class="code-line">' + (line || ' ') + '</span>';
+            }).join('');
+            code.innerHTML = wrapped;
+
+            /* 复制按钮 */
+            var copyBtn = document.querySelector('.copy-btn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function() {
+                    var cmd = this.getAttribute('data-cmd');
+                    var txt = document.createElement('textarea');
+                    txt.value = cmd;
+                    document.body.appendChild(txt);
+                    txt.select();
+                    try { document.execCommand('copy'); } catch(e) {}
+                    document.body.removeChild(txt);
+                    var orig = this.textContent;
+                    this.textContent = 'Copied';
+                    var self = this;
+                    setTimeout(function() { self.textContent = orig; }, 1500);
+                });
+            }
+        });
         const translations = {
             zh: {
                 nav_home: "首页", nav_doc: "文档",
